@@ -62,7 +62,6 @@ do {									\
 #define init_completion(x) __init_completion(x)
 static inline void complete_acquire(struct completion *x) {}
 static inline void complete_release(struct completion *x) {}
-static inline void complete_release_commit(struct completion *x) {}
 #endif
 
 #ifdef CONFIG_LOCKDEP_COMPLETIONS
