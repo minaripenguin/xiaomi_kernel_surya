@@ -2131,6 +2131,7 @@ int icnss_unregister_driver(struct icnss_driver_ops *ops)
 	if (!penv->ops) {
 		icnss_pr_err("Driver not registered\n");
 		ret = -ENOENT;
+		penv->ops = NULL;
 		goto out;
 	}
 
