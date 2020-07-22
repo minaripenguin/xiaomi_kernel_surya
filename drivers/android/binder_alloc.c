@@ -20,6 +20,7 @@
 #include <asm/cacheflush.h>
 #include <linux/list.h>
 #include <linux/sched/mm.h>
+#include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/rtmutex.h>
 #include <linux/rbtree.h>
@@ -731,7 +732,7 @@ int binder_alloc_mmap_handler(struct binder_alloc *alloc,
 	binder_insert_free_buffer(alloc, buffer);
 	alloc->free_async_space = alloc->buffer_size / 2;
 	binder_alloc_set_vma(alloc, vma);
-	mmgrab(alloc->vma_vm_mm);
+	atomic_inc(&alloc->vma_vm_mm->mm_count);
 
 	return 0;
 
