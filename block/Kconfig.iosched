@@ -21,7 +21,10 @@ config IOSCHED_DEADLINE
 	  CSCAN service with FIFO expiration of requests, switching to
 	  a new point in the service tree and doing a batch of IO from there
 	  in case of expiry.
-
+config IOSCHED_MAPLE
+	tristate "Maple I/O scheduler"
+	default n
+	
 config IOSCHED_CFQ
 	tristate "CFQ I/O scheduler"
 	default y
@@ -32,7 +35,15 @@ config IOSCHED_CFQ
 	  and server systems.
 
 	  This is the default I/O scheduler.
-
+	  
+config IOSCHED_ANXIETY
+	tristate "Anxiety I/O scheduler"
+	default n
+	---help---
+	  The Anxiety I/O scheduler prioritizes latency over everything
+	  else. When a request comes in, it will use a lighweight
+	  selection algorithm to swiftly process the current pending task.
+	  
 config CFQ_GROUP_IOSCHED
 	bool "CFQ Group Scheduling support"
 	depends on IOSCHED_CFQ && BLK_CGROUP
@@ -40,10 +51,30 @@ config CFQ_GROUP_IOSCHED
 	---help---
 	  Enable group IO scheduling in CFQ.
 
+config IOSCHED_BFQ_SQ
+	tristate "BFQ-SQ I/O scheduler"
+	default n
+	---help---
+	The BFQ-SQ I/O scheduler (for legacy blk: SQ stands for
+	SingleQueue) distributes bandwidth among all processes
+	according to their weights, regardless of the device
+	parameters and with any workload. It also guarantees a low
+	latency to interactive and soft real-time applications.
+	Details in Documentation/block/bfq-iosched.txt
+
+config BFQ_SQ_GROUP_IOSCHED
+	bool "BFQ-SQ hierarchical scheduling support"
+	depends on IOSCHED_BFQ_SQ && BLK_CGROUP
+	default n
+	---help---
+
+	Enable hierarchical scheduling in BFQ-SQ, using the blkio
+	(cgroups-v1) or io (cgroups-v2) controller.
+
 choice
 
 	prompt "Default I/O scheduler"
-	default DEFAULT_CFQ
+	default DEFAULT_BFQ
 	help
 	  Select the I/O scheduler which will be used by default for all
 	  block devices.
@@ -53,6 +84,25 @@ choice
 
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
+	
+	config DEFAULT_BFQ_SQ
+		bool "BFQ-SQ" if IOSCHED_BFQ_SQ=y
+		help
+		  Selects BFQ-SQ as the default I/O scheduler which will be
+		  used by default for all block devices.
+		  The BFQ-SQ I/O scheduler aims at distributing the bandwidth
+		  as desired, independently of the disk parameters and with
+		  any workload. It also tries to guarantee low latency to
+		  interactive and soft real-time applications.
+
+	config DEFAULT_ANXIETY
+		bool "Anxiety" if IOSCHED_ANXIETY=y
+		
+	config DEFAULT_MAPLE
+		bool "MAPLE" if IOSCHED_MAPLE=y
+			
+	config DEFAULT_BFQ
+		bool "bfq" if IOSCHED_BFQ=y
 
 	config DEFAULT_NOOP
 		bool "No-op"
@@ -63,7 +113,30 @@ config DEFAULT_IOSCHED
 	string
 	default "deadline" if DEFAULT_DEADLINE
 	default "cfq" if DEFAULT_CFQ
+	default "bfq-sq" if DEFAULT_BFQ_SQ
+	default "anxiety" if DEFAULT_ANXIETY
+	default "maple" if DEFAULT_MAPLE
 	default "noop" if DEFAULT_NOOP
+	default "bfq" if DEFAULT_BFQ
+
+config MQ_IOSCHED_BFQ
+	tristate "BFQ-MQ I/O Scheduler"
+	default y
+	---help---
+	BFQ I/O scheduler for BLK-MQ. BFQ-MQ distributes bandwidth
+	among all processes according to their weights, regardless of
+	the device parameters and with any workload. It also
+	guarantees a low latency to interactive and soft real-time
+	applications.  Details in Documentation/block/bfq-iosched.txt
+
+config MQ_BFQ_GROUP_IOSCHED
+	bool "BFQ-MQ hierarchical scheduling support"
+	depends on MQ_IOSCHED_BFQ && BLK_CGROUP
+	default n
+	---help---
+
+	Enable hierarchical scheduling in BFQ-MQ, using the blkio
+	(cgroups-v1) or io (cgroups-v2) controller.
 
 config MQ_IOSCHED_DEADLINE
 	tristate "MQ deadline I/O scheduler"
