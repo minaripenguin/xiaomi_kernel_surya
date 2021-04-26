@@ -1601,7 +1601,7 @@ static int tavil_codec_set_i2s_rx_ch(struct snd_soc_dapm_widget *w,
 		if (dai->bit_width == 16)
 			i2s_bit_mode = 0x01;
 		else
-			i2s_bit_mode = 0x00;
+			i2s_bit_mode = 0x01;
 
 		switch (dai->rate) {
 		case 8000:
@@ -1636,9 +1636,9 @@ static int tavil_codec_set_i2s_rx_ch(struct snd_soc_dapm_widget *w,
 				    0x3c, (rx_fs_rate << 2));
 	} else {
 		snd_soc_update_bits(codec, i2s_reg,
-				    0x40, 0x00);
+				     0x40, i2s_bit_mode << 6);
 		snd_soc_update_bits(codec, i2s_reg,
-				    0x3c, 0x00);
+				    0x3c, (rx_fs_rate << 2));
 	}
 	return 0;
 }
@@ -1657,7 +1657,7 @@ static int tavil_codec_set_i2s_tx_ch(struct snd_soc_dapm_widget *w,
 		if (dai->bit_width == 16)
 			i2s_bit_mode = 0x01;
 		else
-			i2s_bit_mode = 0x00;
+			i2s_bit_mode = 0x01;
 
 		snd_soc_update_bits(codec, i2s_reg, 0x40, i2s_bit_mode << 6);
 
@@ -1712,19 +1712,19 @@ static int tavil_codec_set_i2s_tx_ch(struct snd_soc_dapm_widget *w,
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX0_CFG,
-				    0x03, 0x00);
+				    0x03, 0x01);
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX0_CFG,
-				    0x0C, 0x00);
+				    0x0C, 0x01);
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX1_0_CFG,
-				    0x03, 0x00);
+				    0x03, 0x01);
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX1_1_CFG,
-				    0x05, 0x00);
+				    0x05, 0x05);
 	}
 	return 0;
 }
@@ -2221,8 +2221,8 @@ static void tavil_ocp_control(struct snd_soc_codec *codec, bool enable)
 		snd_soc_update_bits(codec, WCD934X_HPH_OCP_CTL, 0x10, 0x10);
 		snd_soc_update_bits(codec, WCD934X_RX_OCP_CTL, 0x0F, 0x02);
 	} else {
-		snd_soc_update_bits(codec, WCD934X_RX_OCP_CTL, 0x0F, 0x0F);
-		snd_soc_update_bits(codec, WCD934X_HPH_OCP_CTL, 0x10, 0x00);
+		snd_soc_update_bits(codec, WCD934X_RX_OCP_CTL, 0x0F, 0x02);
+		snd_soc_update_bits(codec, WCD934X_HPH_OCP_CTL, 0x10, 0x10);
 	}
 }
 
