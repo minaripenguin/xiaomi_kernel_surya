@@ -471,7 +471,6 @@ static ssize_t backing_dev_store(struct device *dev,
 
 	reset_bdev(zram);
 
-	zram->old_block_size = old_block_size;
 	zram->bdev = bdev;
 	zram->backing_dev = backing_dev;
 	zram->bitmap = bitmap;
@@ -573,7 +572,6 @@ static int do_writeback(struct zram *zram)
 	struct bio_vec bio_vec;
 	struct page *page;
 	int ret = 0;
-	int err;
 	unsigned long blk_idx = 0;
 
 	down_read(&zram->init_lock);
@@ -687,7 +685,6 @@ next:
 
 	if (blk_idx)
 		free_block_bdev(zram, blk_idx);
-	ret = len;
 	__free_page(page);
 release_init_lock:
 	pr_info("writeback: C: %llu MiB, R: %llu MiB, W: %llu MiB\n",
@@ -1044,7 +1041,6 @@ static ssize_t mm_stat_show(struct device *dev,
 			(atomic_long_read(&pool_stats.pages_compacted)) / 256,
 			(zram_dedup_dup_size(zram)) / 1048576,
 			(zram_dedup_meta_size(zram)) / 1048576);
-			((u64)atomic64_read(&zram->stats.huge_pages)) / 256);
 	up_read(&zram->init_lock);
 
 	return ret;
@@ -1711,15 +1707,13 @@ static int msm_drm_notifier_callback(struct notifier_block *self,
 
 	blank = evdata->data;
 	switch (*blank) {
-	case MSM_DRM_BLANK_POWERDOWN_CUST:
 	case MSM_DRM_BLANK_POWERDOWN:
-	case MSM_DRM_BLANK_NORMAL:
 		if (!screen_on)
 			goto out;
 		screen_on = false;
 		queue_work(system_power_efficient_wq, &zram_wb_fb_worker);
 		break;
-	case MSM_DRM_BLANK_UNBLANK_CUST:
+	case MSM_DRM_BLANK_UNBLANK:
 		if (screen_on)
 			goto out;
 		screen_on = true;
