@@ -33,6 +33,40 @@
 
 static DEFINE_MUTEX(l2bw_lock);
 
+static unsigned long arg_cpu_max_c1 = 1804800;
+
+static int __init cpufreq_read_cpu_max_c1(char *cpu_max_c1)
+{
+	unsigned long ui_khz;
+	int ret;
+
+	ret = kstrtoul(cpu_max_c1, 0, &ui_khz);
+	if (ret)
+		return -EINVAL;
+
+	arg_cpu_max_c1 = ui_khz;
+	printk("cpu_max_c1=%lu\n", arg_cpu_max_c1);
+	return ret;
+}
+__setup("cpu_max_c1=", cpufreq_read_cpu_max_c1);
+
+static unsigned long arg_cpu_max_c2 = 2304000;
+
+static int __init cpufreq_read_cpu_max_c2(char *cpu_max_c2)
+{
+	unsigned long ui_khz;
+	int ret;
+
+	ret = kstrtoul(cpu_max_c2, 0, &ui_khz);
+	if (ret)
+		return -EINVAL;
+
+	arg_cpu_max_c2 = ui_khz;
+	printk("cpu_max_c2=%lu\n", arg_cpu_max_c2);
+	return ret;
+}
+__setup("cpu_max_c2=", cpufreq_read_cpu_max_c2);
+
 static struct thermal_cooling_device *cdev[NR_CPUS];
 static struct clk *cpu_clk[NR_CPUS];
 static struct clk *l2_clk;
@@ -410,6 +444,12 @@ static struct cpufreq_frequency_table *cpufreq_parse_dt(struct device *dev,
 		 */
 		if (j > 0 && f <= ftbl[j - 1].frequency)
 			continue;
+
+				if ((cpu < 2 && f > arg_cpu_max_c1) ||
+				(cpu >= 2 && f > arg_cpu_max_c2)) {
+			nf = j;
+			break;
+		}
 
 		ftbl[j].driver_data = j;
 		ftbl[j].frequency = f;
