@@ -74,7 +74,7 @@
 unsigned long long __weak sched_clock(void)
 {
 	return (unsigned long long)(jiffies - INITIAL_JIFFIES)
-					* (NSEC_PER_SEC / HZ);
+					* (NSEC_PER_SEC / msecs_to_jiffies(1000));
 }
 EXPORT_SYMBOL_GPL(sched_clock);
 

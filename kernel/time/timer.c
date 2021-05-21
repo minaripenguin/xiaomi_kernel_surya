@@ -284,7 +284,7 @@ static unsigned long round_jiffies_common(unsigned long j, int cpu,
 	 */
 	j += cpu * 3;
 
-	rem = j % HZ;
+	rem = j % msecs_to_jiffies(1000);
 
 	/*
 	 * If the target jiffie is just after a whole second (which can happen
@@ -293,10 +293,10 @@ static unsigned long round_jiffies_common(unsigned long j, int cpu,
 	 * as cutoff for this rounding as an extreme upper bound for this.
 	 * But never round down if @force_up is set.
 	 */
-	if (rem < HZ/4 && !force_up) /* round down */
+	if (rem < msecs_to_jiffies(250) && !force_up) /* round down */
 		j = j - rem;
 	else /* round up */
-		j = j - rem + HZ;
+		j = j - rem + msecs_to_jiffies(1000);
 
 	/* now that we have rounded, subtract the extra skew again */
 	j -= cpu * 3;

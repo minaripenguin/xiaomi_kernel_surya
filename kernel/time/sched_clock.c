@@ -244,7 +244,7 @@ void __init sched_clock_postinit(void)
 	 * make it the final one one.
 	 */
 	if (cd.actual_read_sched_clock == jiffy_sched_clock_read)
-		sched_clock_register(jiffy_sched_clock_read, BITS_PER_LONG, HZ);
+		sched_clock_register(jiffy_sched_clock_read, BITS_PER_LONG, msecs_to_jiffies(1000));
 
 	update_sched_clock();
 

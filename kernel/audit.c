@@ -134,7 +134,7 @@ static u32	audit_rate_limit;
 /* Number of outstanding audit_buffers allowed.
  * When set to zero, this means unlimited. */
 static u32	audit_backlog_limit = 64;
-#define AUDIT_BACKLOG_WAIT_TIME (60 * HZ)
+#define AUDIT_BACKLOG_WAIT_TIME msecs_to_jiffies(60000)
 static u32	audit_backlog_wait_time = AUDIT_BACKLOG_WAIT_TIME;
 
 /* The identity of the user shutting down the audit system. */

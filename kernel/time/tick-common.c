@@ -196,7 +196,7 @@ static void tick_setup_device(struct tick_device *td,
 			else
 				tick_do_timer_cpu = TICK_DO_TIMER_NONE;
 			tick_next_period = ktime_get();
-			tick_period = NSEC_PER_SEC / HZ;
+			tick_period = NSEC_PER_SEC / msecs_to_jiffies(1000);
 		}
 
 		/*

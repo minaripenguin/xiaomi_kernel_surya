@@ -461,7 +461,7 @@ void cpu_set_state_online(int cpu)
  */
 bool cpu_wait_death(unsigned int cpu, int seconds)
 {
-	int jf_left = seconds * HZ;
+	int jf_left = seconds * msecs_to_jiffies(1000);
 	int oldstate;
 	bool ret = true;
 	int sleep_jf = 1;

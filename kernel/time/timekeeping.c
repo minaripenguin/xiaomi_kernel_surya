@@ -145,7 +145,7 @@ static inline u64 tk_clock_read(struct tk_read_base *tkr)
 }
 
 #ifdef CONFIG_DEBUG_TIMEKEEPING
-#define WARNING_FREQ (HZ*300) /* 5 minute rate-limiting */
+#define WARNING_FREQ msecs_to_jiffies(300000) /* 5 minute rate-limiting */
 
 static void timekeeping_check_update(struct timekeeper *tk, u64 offset)
 {

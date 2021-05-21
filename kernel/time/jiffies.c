@@ -119,7 +119,7 @@ int register_refined_jiffies(long cycles_per_second)
 	refined_jiffies.rating++;
 
 	/* Calc cycles per tick */
-	cycles_per_tick = (cycles_per_second + HZ/2)/HZ;
+	cycles_per_tick = (cycles_per_second + msecs_to_jiffies(500))/msecs_to_jiffies(1000);
 	/* shift_hz stores hz<<8 for extra accuracy */
 	shift_hz = (u64)cycles_per_second << 8;
 	shift_hz += cycles_per_tick/2;

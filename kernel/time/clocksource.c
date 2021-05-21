@@ -125,7 +125,7 @@ static void __clocksource_change_rating(struct clocksource *cs, int rating);
 /*
  * Interval: 0.5sec Threshold: 0.0625s
  */
-#define WATCHDOG_INTERVAL (HZ >> 1)
+#define WATCHDOG_INTERVAL (msecs_to_jiffies(1000) >> 1)
 #define WATCHDOG_THRESHOLD (NSEC_PER_SEC >> 4)
 
 static void clocksource_watchdog_work(struct work_struct *work)

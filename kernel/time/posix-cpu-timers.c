@@ -127,7 +127,7 @@ posix_cpu_clock_getres(const clockid_t which_clock, struct timespec64 *tp)
 	int error = check_clock(which_clock);
 	if (!error) {
 		tp->tv_sec = 0;
-		tp->tv_nsec = ((NSEC_PER_SEC + HZ - 1) / HZ);
+		tp->tv_nsec = ((NSEC_PER_SEC + msecs_to_jiffies(1000) - 1) / msecs_to_jiffies(1000));
 		if (CPUCLOCK_WHICH(which_clock) == CPUCLOCK_SCHED) {
 			/*
 			 * If sched_clock is using a cycle counter, we
@@ -829,7 +829,7 @@ static void check_thread_timers(struct task_struct *tsk,
 		unsigned long hard = task_rlimit_max(tsk, RLIMIT_RTTIME);
 
 		if (hard != RLIM_INFINITY &&
-		    tsk->rt.timeout > DIV_ROUND_UP(hard, USEC_PER_SEC/HZ)) {
+		    tsk->rt.timeout > DIV_ROUND_UP(hard, USEC_PER_SEC/msecs_to_jiffies(1000))) {
 			/*
 			 * At the hard limit, we just die.
 			 * No need to calculate anything else now.
@@ -841,7 +841,7 @@ static void check_thread_timers(struct task_struct *tsk,
 			__group_send_sig_info(SIGKILL, SEND_SIG_PRIV, tsk);
 			return;
 		}
-		if (tsk->rt.timeout > DIV_ROUND_UP(soft, USEC_PER_SEC/HZ)) {
+		if (tsk->rt.timeout > DIV_ROUND_UP(soft, USEC_PER_SEC/msecs_to_jiffies(1000))) {
 			/*
 			 * At the soft limit, send a SIGXCPU every second.
 			 */
