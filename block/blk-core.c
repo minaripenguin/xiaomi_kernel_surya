@@ -894,7 +894,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id)
 		goto fail_stats;
 
 	q->backing_dev_info->ra_pages =
-			(VM_MAX_READAHEAD * 1024) / PAGE_SIZE;
+			(64 * 1024) / PAGE_SIZE;
 	q->backing_dev_info->io_pages =
 			(VM_MAX_READAHEAD * 1024) / PAGE_SIZE;
 	q->backing_dev_info->capabilities = BDI_CAP_CGROUP_WRITEBACK;
