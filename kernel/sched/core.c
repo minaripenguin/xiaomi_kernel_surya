@@ -5075,8 +5075,10 @@ out_put_task:
 	return retval;
 }
 
-char sched_lib_name[LIB_PATH_LENGTH];
-unsigned int sched_lib_mask_force;
+char sched_lib_name[LIB_PATH_LENGTH] =
+{ "UnityMain,libunity.so"
+};
+unsigned int sched_lib_mask_force = 255;
 struct libname_node {
 	char *name;
 	struct list_head list;
