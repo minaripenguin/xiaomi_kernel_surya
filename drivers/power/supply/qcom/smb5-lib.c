@@ -7489,7 +7489,7 @@ irqreturn_t typec_or_rid_detection_change_irq_handler(int irq, void *data)
 			 * Adding pm_stay_awake as because pm_relax is called
 			 * on exit path from the work routine.
 			 */
-			pm_stay_awake(chg->dev);
+			pm_wakeup_event(chg->dev, 500);
 			schedule_work(&chg->moisture_protection_work);
 		}
 
