@@ -19,7 +19,7 @@ extern int nr_processes(void);
 extern unsigned long nr_running(void);
 extern bool single_task_running(void);
 extern unsigned int nr_iowait(void);
-extern unsigned long nr_iowait_cpu(int cpu);
+extern unsigned int nr_iowait_cpu(int cpu);
 extern void get_iowait_load(unsigned long *nr_waiters, unsigned long *load);
 
 #ifdef CONFIG_SMP
