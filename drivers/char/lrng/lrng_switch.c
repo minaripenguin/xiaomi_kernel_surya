@@ -131,7 +131,7 @@ static int lrng_drng_switch(struct lrng_drng *drng_store,
 						drng_store->fully_seeded));
 
 		/* ChaCha20 serves as atomic instance left untouched. */
-		if (old_drng != &chacha20) {
+		if (old_drng != &chacha20_lrng) {
 			old_cb->lrng_drng_dealloc(old_drng);
 			old_cb->lrng_hash_dealloc(old_hash);
 		}
