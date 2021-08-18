@@ -130,3 +130,6 @@ kernel/configs/android-*.cfg
 /build
 /out
 build.sh
+/clang
+/gcc
+/gcc32
