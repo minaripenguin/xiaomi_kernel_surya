@@ -114,7 +114,7 @@ extern int scm_get_feat_version(u32 feat);
 extern bool is_scm_armv8(void);
 
 extern struct mutex scm_lmh_lock;
-extern bool under_scm_call(void);
+extern bool under_scm_call(int cpu);
 #else
 
 static inline int scm_call2(u32 cmd_id, struct scm_desc *desc)
@@ -176,7 +176,7 @@ static inline int scm_enable_mem_protection(void)
 {
 	return 0;
 }
-extern bool under_scm_call(void)
+extern bool under_scm_call(int cpu)
 {
 	return false;
 }
