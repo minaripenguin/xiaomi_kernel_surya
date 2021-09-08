@@ -303,6 +303,7 @@ static int init_rootdomain(struct root_domain *rd)
 		goto free_cpudl;
 
 	rd->max_cap_orig_cpu = rd->min_cap_orig_cpu = -1;
+	rd->mid_cap_orig_cpu = -1;
 
 	init_max_cpu_capacity(&rd->max_cpu_capacity);
 
@@ -1888,6 +1889,20 @@ build_sched_domains(const struct cpumask *cpu_map, struct sched_domain_attr *att
 			WRITE_ONCE(d.rd->min_cap_orig_cpu, i);
 
 		cpu_attach_domain(sd, d.rd, i);
+	}
+
+	/* set the mid capacity cpu (assumes only 3 capacities) */
+	for_each_cpu(i, cpu_map) {
+		int max_cpu = READ_ONCE(d.rd->max_cap_orig_cpu);
+		int min_cpu = READ_ONCE(d.rd->min_cap_orig_cpu);
+
+		if ((arch_scale_cpu_capacity(NULL, i)
+				!=  arch_scale_cpu_capacity(NULL, min_cpu)) &&
+				(arch_scale_cpu_capacity(NULL, i)
+				!=  arch_scale_cpu_capacity(NULL, max_cpu))) {
+			WRITE_ONCE(d.rd->mid_cap_orig_cpu, i);
+			break;
+		}
 	}
 
 	/*
