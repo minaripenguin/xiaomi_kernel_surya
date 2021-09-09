@@ -723,9 +723,7 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 		.desc = "ARM erratum 1188873",
 		.capability = ARM64_WORKAROUND_1188873,
 		/* Kryo-4G r15p14 */
-		ERRATA_MIDR_RANGE(MIDR_KRYO4G,
-			MIDR_CPU_VAR_REV(15, 14),
-			MIDR_CPU_VAR_REV(15, 15)),
+		ERRATA_MIDR_RANGE(MIDR_KRYO4G, 15, 14, 15, 15),
 	},
 #endif
 	{
