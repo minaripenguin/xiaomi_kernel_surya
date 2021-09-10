@@ -1471,7 +1471,9 @@ static int fg_charge_full_update(struct fg_dev *fg)
 		msoc, bsoc, fg->health, fg->charge_status,
 		fg->charge_full);
 	if (fg->charge_done && !fg->charge_full) {
-		if (msoc >= 99 && fg->health == POWER_SUPPLY_HEALTH_GOOD) {
+		if (msoc >= 99 && (fg->health == POWER_SUPPLY_HEALTH_GOOD
+				|| fg->health == POWER_SUPPLY_HEALTH_COOL
+				|| fg->health == POWER_SUPPLY_HEALTH_WARM)) {
 			fg_dbg(fg, FG_STATUS, "Setting charge_full to true\n");
 			fg->charge_full = true;
 			/*
@@ -1725,7 +1727,15 @@ static int fg_adjust_recharge_soc(struct fg_dev *fg)
 				fg->recharge_soc_adjusted = true;
 			} else {
 				/* adjusted already, do nothing */
-				return 0;
+				if (fg->health != POWER_SUPPLY_HEALTH_GOOD)
+					return 0;
+
+				/*
+				 * Device is out of JEITA so restore the
+				 * default value
+				 */
+				new_recharge_soc = recharge_soc;
+				fg->recharge_soc_adjusted = false;
 			}
 		} else {
 			if (!fg->recharge_soc_adjusted)

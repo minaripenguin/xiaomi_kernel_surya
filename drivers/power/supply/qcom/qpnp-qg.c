@@ -2550,7 +2550,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 				qg_dbg(chip, QG_DEBUG_STATUS, "HEALTH_GOOD set recharge_soc=%d\n",
 						prop.intval);
 			}
-			if (chip->msoc >= 99) {
+			if (chip->msoc >= 99 && (health == POWER_SUPPLY_HEALTH_GOOD || health == POWER_SUPPLY_HEALTH_COOL)) {
 				chip->charge_full = true;
 				qg_dbg(chip, QG_DEBUG_STATUS, "Setting charge_full (0->1) @ msoc=%d\n",
 						chip->msoc);
