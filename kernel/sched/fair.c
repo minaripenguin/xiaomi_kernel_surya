@@ -7641,38 +7641,6 @@ static inline bool task_fits_max(struct task_struct *p, int cpu)
 	return task_fits_capacity(p, capacity, cpu);
 }
 
-static bool is_packing_eligible(struct task_struct *p, int target_cpu,
-				struct find_best_target_env *fbt_env,
-				unsigned int target_cpus_count,
-				int best_idle_cstate, bool boosted)
-{
-	unsigned long tutil, estimated_capacity;
-
-	if (task_placement_boost_enabled(p) || fbt_env->need_idle || boosted)
-		return false;
-
-	if (best_idle_cstate == -1)
-		return false;
-
-	if (target_cpus_count != 1)
-		return true;
-
-	if (task_in_cum_window_demand(cpu_rq(target_cpu), p))
-		tutil = 0;
-	else
-		tutil = task_util(p);
-
-	estimated_capacity = cpu_util_cum(target_cpu, tutil);
-	estimated_capacity = add_capacity_margin(estimated_capacity,
-						target_cpu);
-
-	/*
-	 * If there is only one active CPU and it is already above its current
-	 * capacity, avoid placing additional task on the CPU.
-	 */
-	return (estimated_capacity <= capacity_curr_of(target_cpu));
-}
-
 static int start_cpu(struct task_struct *p, bool boosted,
 		     bool sync_boost, struct cpumask *rtg_target)
 {
@@ -11278,15 +11246,6 @@ static int need_active_balance(struct lb_env *env)
 		return 1;
 
 	return unlikely(sd->nr_balance_failed > sd->cache_nice_tries+2);
-}
-
-static int group_balance_cpu_not_isolated(struct sched_group *sg)
-{
-	cpumask_t cpus;
-
-	cpumask_and(&cpus, sched_group_span(sg), group_balance_mask(sg));
-	cpumask_andnot(&cpus, &cpus, cpu_isolated_mask);
-	return cpumask_first(&cpus);
 }
 
 static int active_load_balance_cpu_stop(void *data);
