@@ -95,7 +95,7 @@ static const int bfq_back_max = (16 * 1024);
 static const int bfq_back_penalty = 1;
 
 /* Idling period duration, in ns. */
-static u32 bfq_slice_idle = 1;
+static u32 bfq_slice_idle = (NSEC_PER_SEC / 125);
 
 /* Minimum number of assigned budgets for which stats are safe to compute. */
 static const int bfq_stats_min_budgets = 194;
