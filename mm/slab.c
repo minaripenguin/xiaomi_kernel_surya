@@ -264,8 +264,8 @@ static void kmem_cache_node_init(struct kmem_cache_node *parent)
  * OTOH the cpuarrays can contain lots of objects,
  * which could lock up otherwise freeable slabs.
  */
-#define REAPTIMEOUT_AC		(2*HZ)
-#define REAPTIMEOUT_NODE	(4*HZ)
+#define REAPTIMEOUT_AC		(2*msecs_to_jiffies(1000))
+#define REAPTIMEOUT_NODE	(4*msecs_to_jiffies(1000))
 
 #if STATS
 #define	STATS_INC_ACTIVE(x)	((x)->num_active++)

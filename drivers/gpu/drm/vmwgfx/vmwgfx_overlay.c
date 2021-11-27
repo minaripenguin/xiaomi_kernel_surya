@@ -199,7 +199,7 @@ static int vmw_overlay_send_stop(struct vmw_private *dev_priv,
 			break;
 
 		ret = vmw_fallback_wait(dev_priv, false, true, 0,
-					interruptible, 3*HZ);
+					interruptible, 3*msecs_to_jiffies(1000));
 		if (interruptible && ret == -ERESTARTSYS)
 			return ret;
 		else

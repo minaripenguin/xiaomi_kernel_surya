@@ -51,7 +51,7 @@ static irqreturn_t mc13783_ts_handler(int irq, void *data)
 	 * Kick off reading coordinates. Note that if work happens already
 	 * be queued for future execution (it rearms itself) it will not
 	 * be rescheduled for immediate execution here. However the rearm
-	 * delay is HZ / 50 which is acceptable.
+	 * delay is msecs_to_jiffies(1000) / 50 which is acceptable.
 	 */
 	schedule_delayed_work(&priv->work, 0);
 
@@ -105,7 +105,7 @@ static void mc13783_ts_report_sample(struct mc13783_ts_priv *priv)
 
 			dev_dbg(&idev->dev, "report (%d, %d, %d)\n",
 					x1, y1, 0x1000 - cr0);
-			schedule_delayed_work(&priv->work, HZ / 50);
+			schedule_delayed_work(&priv->work, msecs_to_jiffies(1000) / 50);
 		} else {
 			dev_dbg(&idev->dev, "report release\n");
 		}

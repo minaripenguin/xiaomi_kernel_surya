@@ -263,7 +263,7 @@ nouveau_fence_emit(struct nouveau_fence *fence, struct nouveau_channel *chan)
 	int ret;
 
 	fence->channel  = chan;
-	fence->timeout  = jiffies + (15 * HZ);
+	fence->timeout  = jiffies + (15 * msecs_to_jiffies(1000));
 
 	if (priv->uevent)
 		dma_fence_init(&fence->base, &nouveau_fence_ops_uevent,
@@ -378,7 +378,7 @@ nouveau_fence_wait(struct nouveau_fence *fence, bool lazy, bool intr)
 	if (!lazy)
 		return nouveau_fence_wait_busy(fence, intr);
 
-	ret = dma_fence_wait_timeout(&fence->base, intr, 15 * HZ);
+	ret = dma_fence_wait_timeout(&fence->base, intr, 15 * msecs_to_jiffies(1000));
 	if (ret < 0)
 		return ret;
 	else if (!ret)

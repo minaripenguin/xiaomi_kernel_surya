@@ -93,7 +93,7 @@
 				Use spinlocks. Eliminate sti().
 	1.03    GRG 1998.06.16  Eliminated an Ugh
 	1.04	GRG 1998.08.15  Added extra debugging, improvements to
-				pcd_completion, use HZ in loop timing
+				pcd_completion, use msecs_to_jiffies(1000) in loop timing
 	1.05	GRG 1998.08.16	Conformed to "Uniform CD-ROM" standard
 	1.06    GRG 1998.08.19  Added audio ioctl support
 	1.07    GRG 1998.09.24  Increased reset timeout, added jumbo support
@@ -162,7 +162,7 @@ module_param_array(drive3, int, NULL, 0);
 #define PCD_READY_TMO	    20	/* in seconds */
 #define PCD_RESET_TMO	   100	/* in tenths of a second */
 
-#define PCD_SPIN	(1000000*PCD_TMO)/(HZ*PCD_DELAY)
+#define PCD_SPIN	(1000000*PCD_TMO)/(msecs_to_jiffies(1000)*PCD_DELAY)
 
 #define IDE_ERR		0x01
 #define IDE_DRQ         0x08
@@ -553,11 +553,11 @@ static int pcd_reset(struct pcd_unit *cd)
 	write_reg(cd, 6, 0xa0 + 0x10 * cd->drive);
 	write_reg(cd, 7, 8);
 
-	pcd_sleep(20 * HZ / 1000);	/* delay a bit */
+	pcd_sleep(20 * msecs_to_jiffies(1000) / 1000);	/* delay a bit */
 
 	k = 0;
 	while ((k++ < PCD_RESET_TMO) && (status_reg(cd) & IDE_BUSY))
-		pcd_sleep(HZ / 10);
+		pcd_sleep(msecs_to_jiffies(1000) / 10);
 
 	flg = 1;
 	for (i = 0; i < 5; i++)
@@ -596,7 +596,7 @@ static int pcd_ready_wait(struct pcd_unit *cd, int tmo)
 		if (!(((p & 0xffff) == 0x0402) || ((p & 0xff) == 6)))
 			return p;
 		k++;
-		pcd_sleep(HZ);
+		pcd_sleep(msecs_to_jiffies(1000));
 	}
 	return 0x000020;	/* timeout */
 }

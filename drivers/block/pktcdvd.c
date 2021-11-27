@@ -718,7 +718,7 @@ static int pkt_generic_packet(struct pktcdvd_device *pd, struct packet_command *
 	scsi_req(rq)->cmd_len = COMMAND_SIZE(cgc->cmd[0]);
 	memcpy(scsi_req(rq)->cmd, cgc->cmd, CDROM_PACKET_SIZE);
 
-	rq->timeout = 60*HZ;
+	rq->timeout = 60*msecs_to_jiffies(1000);
 	if (cgc->quiet)
 		rq->rq_flags |= RQF_QUIET;
 
@@ -2090,7 +2090,7 @@ static noinline_for_stack int pkt_perform_opc(struct pktcdvd_device *pd)
 
 	init_cdrom_command(&cgc, NULL, 0, CGC_DATA_NONE);
 	cgc.sense = &sense;
-	cgc.timeout = 60*HZ;
+	cgc.timeout = 60*msecs_to_jiffies(1000);
 	cgc.cmd[0] = GPCMD_SEND_OPC;
 	cgc.cmd[1] = 1;
 	if ((ret = pkt_generic_packet(pd, &cgc)))
@@ -2374,7 +2374,7 @@ static void pkt_make_request_write(struct request_queue *q, struct bio *bio)
 		set_bdi_congested(q->backing_dev_info, BLK_RW_ASYNC);
 		do {
 			spin_unlock(&pd->lock);
-			congestion_wait(BLK_RW_ASYNC, HZ);
+			congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(1000));
 			spin_lock(&pd->lock);
 		} while(pd->bio_queue_size > pd->write_congestion_off);
 	}

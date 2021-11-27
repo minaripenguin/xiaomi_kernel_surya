@@ -109,7 +109,7 @@
 	1.02    GRG 1998.05.06  SMP spinlock changes, 
 				Added slave support
 	1.03    GRG 1998.06.16  Eliminate an Ugh.
-	1.04	GRG 1998.08.15  Extra debugging, use HZ in loop timing
+	1.04	GRG 1998.08.15  Extra debugging, use msecs_to_jiffies(1000) in loop timing
 	1.05    GRG 1998.09.24  Added jumbo support
 
 */
@@ -187,7 +187,7 @@ module_param_array(drive3, int, NULL, 0);
 #define PD_TMO          800	/* interrupt timeout in jiffies */
 #define PD_SPIN_DEL     50	/* spin delay in micro-seconds  */
 
-#define PD_SPIN         (1000000*PD_TMO)/(HZ*PD_SPIN_DEL)
+#define PD_SPIN         (1000000*PD_TMO)/(msecs_to_jiffies(1000)*PD_SPIN_DEL)
 
 #define STAT_ERR        0x00001
 #define STAT_INDEX      0x00002

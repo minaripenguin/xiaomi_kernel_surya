@@ -127,7 +127,7 @@ static void dp_ctrl_state_ctrl(struct dp_ctrl_private *ctrl, u32 state)
 static void dp_ctrl_push_idle(struct dp_ctrl_private *ctrl,
 				enum dp_stream_id strm)
 {
-	int const idle_pattern_completion_timeout_ms = HZ / 10;
+	int const idle_pattern_completion_timeout_ms = msecs_to_jiffies(1000) / 10;
 	u32 state = 0x0;
 
 	if (!ctrl->power_on)
@@ -186,7 +186,7 @@ static void dp_ctrl_configure_source_link_params(struct dp_ctrl_private *ctrl,
 
 static void dp_ctrl_wait4video_ready(struct dp_ctrl_private *ctrl)
 {
-	if (!wait_for_completion_timeout(&ctrl->video_comp, HZ / 2))
+	if (!wait_for_completion_timeout(&ctrl->video_comp, msecs_to_jiffies(1000) / 2))
 		pr_warn("SEND_VIDEO time out\n");
 }
 

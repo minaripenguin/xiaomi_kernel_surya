@@ -24,7 +24,7 @@ discover_timer(ulong vp)
 	static volatile ulong die;
 	static spinlock_t lock;
 	ulong flags;
-	enum { DTIMERTICK = HZ * 60 }; /* one minute */
+	enum { DTIMERTICK = msecs_to_jiffies(1000) * 60 }; /* one minute */
 
 	switch (vp) {
 	case TINIT:

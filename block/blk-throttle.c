@@ -21,8 +21,8 @@ static int throtl_quantum = 32;
 
 /* Throttling is performed over a slice and after that slice is renewed */
 #define DFL_THROTL_SLICE_HD msecs_to_jiffies(100)
-#define DFL_THROTL_SLICE_SSD (HZ / 50)
-#define MAX_THROTL_SLICE (HZ)
+#define DFL_THROTL_SLICE_SSD (msecs_to_jiffies(1000) / 50)
+#define MAX_THROTL_SLICE (msecs_to_jiffies(1000))
 #define MAX_IDLE_TIME (5L * 1000 * 1000) /* 5 s */
 #define MIN_THROTL_BPS (320 * 1024)
 #define MIN_THROTL_IOPS (10)
@@ -1987,27 +1987,27 @@ static void throtl_downgrade_check(struct throtl_grp *tg)
 		return;
 
 	if (tg->bps[READ][LIMIT_LOW]) {
-		bps = tg->last_bytes_disp[READ] * HZ;
+		bps = tg->last_bytes_disp[READ] * msecs_to_jiffies(1000);
 		do_div(bps, elapsed_time);
 		if (bps >= tg->bps[READ][LIMIT_LOW])
 			tg->last_low_overflow_time[READ] = now;
 	}
 
 	if (tg->bps[WRITE][LIMIT_LOW]) {
-		bps = tg->last_bytes_disp[WRITE] * HZ;
+		bps = tg->last_bytes_disp[WRITE] * msecs_to_jiffies(1000);
 		do_div(bps, elapsed_time);
 		if (bps >= tg->bps[WRITE][LIMIT_LOW])
 			tg->last_low_overflow_time[WRITE] = now;
 	}
 
 	if (tg->iops[READ][LIMIT_LOW]) {
-		iops = tg->last_io_disp[READ] * HZ / elapsed_time;
+		iops = tg->last_io_disp[READ] * msecs_to_jiffies(1000) / elapsed_time;
 		if (iops >= tg->iops[READ][LIMIT_LOW])
 			tg->last_low_overflow_time[READ] = now;
 	}
 
 	if (tg->iops[WRITE][LIMIT_LOW]) {
-		iops = tg->last_io_disp[WRITE] * HZ / elapsed_time;
+		iops = tg->last_io_disp[WRITE] * msecs_to_jiffies(1000) / elapsed_time;
 		if (iops >= tg->iops[WRITE][LIMIT_LOW])
 			tg->last_low_overflow_time[WRITE] = now;
 	}
@@ -2048,7 +2048,7 @@ static void throtl_update_latency_buckets(struct throtl_data *td)
 
 	if (!blk_queue_nonrot(td->queue))
 		return;
-	if (time_before(jiffies, td->last_calculate_time + HZ))
+	if (time_before(jiffies, td->last_calculate_time + msecs_to_jiffies(1000)))
 		return;
 	td->last_calculate_time = jiffies;
 

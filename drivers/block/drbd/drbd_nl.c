@@ -673,7 +673,7 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 				try = max_tries - 1;
 				rcu_read_lock();
 				nc = rcu_dereference(connection->net_conf);
-				timeo = nc ? (nc->ping_timeo + 1) * HZ / 10 : 1;
+				timeo = nc ? (nc->ping_timeo + 1) * msecs_to_jiffies(1000) / 10 : 1;
 				rcu_read_unlock();
 				schedule_timeout_interruptible(timeo);
 			}
@@ -1591,7 +1591,7 @@ int drbd_adm_disk_opts(struct sk_buff *skb, struct genl_info *info)
 	if (new_disk_conf->c_plan_ahead > DRBD_C_PLAN_AHEAD_MAX)
 		new_disk_conf->c_plan_ahead = DRBD_C_PLAN_AHEAD_MAX;
 
-	fifo_size = (new_disk_conf->c_plan_ahead * 10 * SLEEP_TIME) / HZ;
+	fifo_size = (new_disk_conf->c_plan_ahead * 10 * SLEEP_TIME) / msecs_to_jiffies(1000);
 	if (fifo_size != device->rs_plan_s->size) {
 		new_plan = fifo_alloc(fifo_size);
 		if (!new_plan) {
@@ -1658,7 +1658,7 @@ int drbd_adm_disk_opts(struct sk_buff *skb, struct genl_info *info)
 	synchronize_rcu();
 	kfree(old_disk_conf);
 	kfree(old_plan);
-	mod_timer(&device->request_timer, jiffies + HZ);
+	mod_timer(&device->request_timer, jiffies + msecs_to_jiffies(1000));
 	goto success;
 
 fail_unlock:
@@ -1835,7 +1835,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	if (new_disk_conf->c_plan_ahead > DRBD_C_PLAN_AHEAD_MAX)
 		new_disk_conf->c_plan_ahead = DRBD_C_PLAN_AHEAD_MAX;
 
-	new_plan = fifo_alloc((new_disk_conf->c_plan_ahead * 10 * SLEEP_TIME) / HZ);
+	new_plan = fifo_alloc((new_disk_conf->c_plan_ahead * 10 * SLEEP_TIME) / msecs_to_jiffies(1000));
 	if (!new_plan) {
 		retcode = ERR_NOMEM;
 		goto fail;
@@ -2131,7 +2131,7 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 	if (rv < SS_SUCCESS)
 		goto force_diskless_dec;
 
-	mod_timer(&device->request_timer, jiffies + HZ);
+	mod_timer(&device->request_timer, jiffies + msecs_to_jiffies(1000));
 
 	if (device->state.role == R_PRIMARY)
 		device->ldev->md.uuid[UI_CURRENT] |=  (u64)1;

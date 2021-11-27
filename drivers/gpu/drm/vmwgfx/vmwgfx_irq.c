@@ -182,7 +182,7 @@ int vmw_fallback_wait(struct vmw_private *dev_priv,
 		down_read(&fifo_state->rwsem);
 		if (dev_priv->cman) {
 			ret = vmw_cmdbuf_idle(dev_priv->cman, interruptible,
-					      10*HZ);
+					      10*msecs_to_jiffies(1000));
 			if (ret)
 				goto out_err;
 		}

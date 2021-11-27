@@ -1181,7 +1181,7 @@ static void wistron_poll(struct input_polled_dev *dev)
 	poll_bios(false);
 
 	/* Increase poll frequency if user is currently pressing keys (< 2s ago) */
-	if (time_before(jiffies, jiffies_last_press + 2 * HZ))
+	if (time_before(jiffies, jiffies_last_press + 2 * msecs_to_jiffies(1000)))
 		dev->poll_interval = POLL_INTERVAL_BURST;
 	else
 		dev->poll_interval = POLL_INTERVAL_DEFAULT;

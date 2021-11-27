@@ -1379,7 +1379,7 @@ void vmw_cmdbuf_remove_pool(struct vmw_cmdbuf_man *man)
 
 	man->has_pool = false;
 	man->default_size = VMW_CMDBUF_INLINE_SIZE;
-	(void) vmw_cmdbuf_idle(man, false, 10*HZ);
+	(void) vmw_cmdbuf_idle(man, false, 10*msecs_to_jiffies(1000));
 	if (man->using_mob) {
 		(void) ttm_bo_kunmap(&man->map_obj);
 		ttm_bo_unref(&man->cmd_space);
@@ -1402,7 +1402,7 @@ void vmw_cmdbuf_man_destroy(struct vmw_cmdbuf_man *man)
 	unsigned int i;
 
 	WARN_ON_ONCE(man->has_pool);
-	(void) vmw_cmdbuf_idle(man, false, 10*HZ);
+	(void) vmw_cmdbuf_idle(man, false, 10*msecs_to_jiffies(1000));
 
 	for_each_cmdbuf_ctx(man, i, ctx)
 		if (vmw_cmdbuf_startstop(man, i, false))

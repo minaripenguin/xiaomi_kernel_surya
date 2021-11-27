@@ -541,7 +541,7 @@ loop:
 
 	WREG32(mmCP_HQD_DEQUEUE_REQUEST, type);
 
-	end_jiffies = (utimeout * HZ / 1000) + jiffies;
+	end_jiffies = (utimeout * msecs_to_jiffies(1000) / 1000) + jiffies;
 	while (true) {
 		temp = RREG32(mmCP_HQD_ACTIVE);
 		if (!(temp & CP_HQD_ACTIVE__ACTIVE_MASK))

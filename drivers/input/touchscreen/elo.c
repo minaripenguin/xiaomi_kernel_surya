@@ -246,7 +246,7 @@ static int elo_command_10(struct elo *elo, unsigned char *packet)
 	if (serio_write(elo->serio, csum))
 		goto out;
 
-	wait_for_completion_timeout(&elo->cmd_done, HZ);
+	wait_for_completion_timeout(&elo->cmd_done, msecs_to_jiffies(1000));
 
 	if (elo->expected_packet == ELO10_TOUCH_PACKET) {
 		/* We are back in reporting mode, the command was ACKed */

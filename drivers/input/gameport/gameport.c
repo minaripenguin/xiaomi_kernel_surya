@@ -21,7 +21,7 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/workqueue.h>
-#include <linux/sched.h>	/* HZ */
+#include <linux/sched.h>	/* msecs_to_jiffies(1000) */
 #include <linux/mutex.h>
 #include <linux/timekeeping.h>
 
@@ -172,7 +172,7 @@ static int old_gameport_measure_speed(struct gameport *gameport)
 	j = jiffies; while (j == jiffies) { t++; gameport_read(gameport); }
 
 	gameport_close(gameport);
-	return t * HZ / 1000;
+	return t * msecs_to_jiffies(1000) / 1000;
 
 #endif
 }

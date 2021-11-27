@@ -33,7 +33,7 @@ void mdp5_set_irqmask(struct mdp_kms *mdp_kms, uint32_t irqmask,
 static void mdp5_irq_error_handler(struct mdp_irq *irq, uint32_t irqstatus)
 {
 	struct mdp5_kms *mdp5_kms = container_of(irq, struct mdp5_kms, error_handler);
-	static DEFINE_RATELIMIT_STATE(rs, 5*HZ, 1);
+	static DEFINE_RATELIMIT_STATE(rs, 5*msecs_to_jiffies(1000), 1);
 	extern bool dumpstate;
 
 	DRM_ERROR_RATELIMITED("errors: %08x\n", irqstatus);

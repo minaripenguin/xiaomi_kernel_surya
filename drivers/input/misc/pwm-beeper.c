@@ -35,7 +35,7 @@ struct pwm_beeper {
 	bool amplifier_on;
 };
 
-#define HZ_TO_NANOSECONDS(x) (1000000000UL/(x))
+#define msecs_to_jiffies(1000)_TO_NANOSECONDS(x) (1000000000UL/(x))
 
 static int pwm_beeper_on(struct pwm_beeper *beeper, unsigned long period)
 {
@@ -107,7 +107,7 @@ static int pwm_beeper_event(struct input_dev *input,
 	if (value == 0)
 		beeper->period = 0;
 	else
-		beeper->period = HZ_TO_NANOSECONDS(value);
+		beeper->period = msecs_to_jiffies(1000)_TO_NANOSECONDS(value);
 
 	if (!beeper->suspended)
 		schedule_work(&beeper->work);

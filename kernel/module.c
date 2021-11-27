@@ -1461,7 +1461,7 @@ resolve_symbol_wait(struct module *mod,
 	if (wait_event_interruptible_timeout(module_wq,
 			!IS_ERR(ksym = resolve_symbol(mod, info, name, owner))
 			|| PTR_ERR(ksym) != -EBUSY,
-					     30 * HZ) <= 0) {
+					     30 * msecs_to_jiffies(1000)) <= 0) {
 		pr_warn("%s: gave up waiting for init of module %s.\n",
 			mod->name, owner);
 	}

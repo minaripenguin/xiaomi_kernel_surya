@@ -27,7 +27,7 @@
 #include "intr.h"
 #include "debug.h"
 
-#define SYNCPT_CHECK_PERIOD (2 * HZ)
+#define SYNCPT_CHECK_PERIOD (2 * msecs_to_jiffies(1000))
 #define MAX_STUCK_CHECK_COUNT 15
 
 static struct host1x_syncpt_base *

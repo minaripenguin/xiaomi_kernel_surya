@@ -229,7 +229,7 @@ int proc_sched_autogroup_set_nice(struct task_struct *p, int nice)
 	if (!capable(CAP_SYS_ADMIN) && time_before(jiffies, next))
 		return -EAGAIN;
 
-	next = HZ / 10 + jiffies;
+	next = msecs_to_jiffies(1000) / 10 + jiffies;
 	ag = autogroup_task_get(p);
 
 	idx = array_index_nospec(nice + 20, 40);

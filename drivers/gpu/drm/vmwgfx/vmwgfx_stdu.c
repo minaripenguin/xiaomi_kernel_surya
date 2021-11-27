@@ -351,7 +351,7 @@ static int vmw_stdu_destroy_st(struct vmw_private *dev_priv,
 	vmw_fifo_commit(dev_priv, sizeof(*cmd));
 
 	/* Force sync */
-	ret = vmw_fallback_wait(dev_priv, false, true, 0, false, 3*HZ);
+	ret = vmw_fallback_wait(dev_priv, false, true, 0, false, 3*msecs_to_jiffies(1000));
 	if (unlikely(ret != 0))
 		DRM_ERROR("Failed to sync with HW");
 

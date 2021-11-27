@@ -479,7 +479,7 @@ static int wacom_send_and_wait(struct wacom *wacom, struct serio *serio,
 	if (err)
 		return err;
 
-	u = wait_for_completion_timeout(&wacom->cmd_done, HZ);
+	u = wait_for_completion_timeout(&wacom->cmd_done, msecs_to_jiffies(1000));
 	if (u == 0) {
 		/* Timeout, process what we've received. */
 		wacom_handle_response(wacom);

@@ -155,7 +155,7 @@ int __request_module(bool wait, const char *fmt, ...)
 				    MAX_KMOD_CONCURRENT, module_name);
 		ret = wait_event_killable_timeout(kmod_wq,
 						  atomic_dec_if_positive(&kmod_concurrent_max) >= 0,
-						  MAX_KMOD_ALL_BUSY_TIMEOUT * HZ);
+						  MAX_KMOD_ALL_BUSY_TIMEOUT * msecs_to_jiffies(1000));
 		if (!ret) {
 			pr_warn_ratelimited("request_module: modprobe %s cannot be processed, kmod busy with %d threads for more than %d seconds now",
 					    module_name, MAX_KMOD_CONCURRENT, MAX_KMOD_ALL_BUSY_TIMEOUT);

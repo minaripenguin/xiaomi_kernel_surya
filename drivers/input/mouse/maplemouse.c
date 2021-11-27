@@ -49,7 +49,7 @@ static int dc_mouse_open(struct input_dev *dev)
 {
 	struct dc_mouse *mse = maple_get_drvdata(to_maple_dev(&dev->dev));
 
-	maple_getcond_callback(mse->mdev, dc_mouse_callback, HZ/50,
+	maple_getcond_callback(mse->mdev, dc_mouse_callback, msecs_to_jiffies(1000)/50,
 		MAPLE_FUNC_MOUSE);
 
 	return 0;

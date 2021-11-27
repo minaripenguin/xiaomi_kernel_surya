@@ -1791,7 +1791,7 @@ static int i915_ring_freq_table(struct seq_file *m, void *unused)
 		goto out;
 
 	if (IS_GEN9_BC(dev_priv) || IS_CANNONLAKE(dev_priv)) {
-		/* Convert GT frequency to 50 HZ units */
+		/* Convert GT frequency to 50 msecs_to_jiffies(1000) units */
 		min_gpu_freq =
 			dev_priv->rps.min_freq_softlimit / GEN9_FREQ_SCALER;
 		max_gpu_freq =

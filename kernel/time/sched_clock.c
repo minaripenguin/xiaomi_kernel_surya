@@ -84,7 +84,7 @@ static u64 notrace jiffy_sched_clock_read(void)
 }
 
 static struct clock_data cd ____cacheline_aligned = {
-	.read_data[0] = { .mult = NSEC_PER_SEC / HZ,
+	.read_data[0] = { .mult = NSEC_PER_SEC / 1000,
 			  .read_sched_clock = jiffy_sched_clock_read, },
 	.actual_read_sched_clock = jiffy_sched_clock_read,
 };

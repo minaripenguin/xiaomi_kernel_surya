@@ -789,7 +789,7 @@ static int lock_torture_stats(void *arg)
 {
 	VERBOSE_TOROUT_STRING("lock_torture_stats task started");
 	do {
-		schedule_timeout_interruptible(stat_interval * HZ);
+		schedule_timeout_interruptible(stat_interval * msecs_to_jiffies(1000));
 		lock_torture_stats_print();
 		torture_shutdown_absorb("lock_torture_stats");
 	} while (!torture_must_stop());
@@ -982,8 +982,8 @@ static int __init lock_torture_init(void)
 
 	/* Prepare torture context. */
 	if (onoff_interval > 0) {
-		firsterr = torture_onoff_init(onoff_holdoff * HZ,
-					      onoff_interval * HZ);
+		firsterr = torture_onoff_init(onoff_holdoff * msecs_to_jiffies(1000),
+					      onoff_interval * msecs_to_jiffies(1000));
 		if (firsterr)
 			goto unwind;
 	}

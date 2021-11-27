@@ -61,7 +61,7 @@ static bool single_bit_flip(unsigned char a, unsigned char b)
 static void check_poison_mem(struct page *page,
 			     unsigned char *mem, size_t bytes)
 {
-	static DEFINE_RATELIMIT_STATE(ratelimit, 5 * HZ, 10);
+	static DEFINE_RATELIMIT_STATE(ratelimit, 5 * 1000, 10);
 	unsigned char *start;
 	unsigned char *end;
 

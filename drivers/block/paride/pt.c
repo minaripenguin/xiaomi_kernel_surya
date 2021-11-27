@@ -98,7 +98,7 @@
 				for clearing error status.
 				Eliminate sti();
 	1.02    GRG 1998.06.16  Eliminate an Ugh.
-	1.03    GRG 1998.08.15  Adjusted PT_TMO, use HZ in loop timing,
+	1.03    GRG 1998.08.15  Adjusted PT_TMO, use msecs_to_jiffies(1000) in loop timing,
 				extra debugging
 	1.04    GRG 1998.09.24  Repair minor coding error, added jumbo support
 	
@@ -169,7 +169,7 @@ module_param_array(drive3, int, NULL, 0);
 #define PT_READY_TMO	60	/* 60 seconds */
 #define PT_REWIND_TMO	1200	/* 20 minutes */
 
-#define PT_SPIN         ((1000000/(HZ*PT_SPIN_DEL))*PT_TMO)
+#define PT_SPIN         ((1000000/(msecs_to_jiffies(1000)*PT_SPIN_DEL))*PT_TMO)
 
 #define STAT_ERR        0x00001
 #define STAT_INDEX      0x00002
@@ -429,7 +429,7 @@ static void pt_media_access_cmd(struct pt_unit *tape, int tmo, char *cmd, char *
 		return;
 	}
 	pi_disconnect(tape->pi);
-	pt_poll_dsc(tape, HZ, tmo, fun);
+	pt_poll_dsc(tape, msecs_to_jiffies(1000), tmo, fun);
 }
 
 static void pt_rewind(struct pt_unit *tape)
@@ -458,11 +458,11 @@ static int pt_reset(struct pt_unit *tape)
 	write_reg(pi, 6, DRIVE(tape));
 	write_reg(pi, 7, 8);
 
-	pt_sleep(20 * HZ / 1000);
+	pt_sleep(20 * msecs_to_jiffies(1000) / 1000);
 
 	k = 0;
 	while ((k++ < PT_RESET_TMO) && (status_reg(pi) & STAT_BUSY))
-		pt_sleep(HZ / 10);
+		pt_sleep(msecs_to_jiffies(1000) / 10);
 
 	flg = 1;
 	for (i = 0; i < 5; i++)
@@ -496,7 +496,7 @@ static int pt_ready_wait(struct pt_unit *tape, int tmo)
 		if (!(((p & 0xffff) == 0x0402) || ((p & 0xff) == 6)))
 			return p;
 		k++;
-		pt_sleep(HZ);
+		pt_sleep(msecs_to_jiffies(1000));
 	}
 	return 0x000020;	/* timeout */
 }
@@ -783,7 +783,7 @@ static ssize_t pt_read(struct file *filp, char __user *buf, size_t count, loff_t
 
 	while (count > 0) {
 
-		if (!pt_poll_dsc(tape, HZ / 100, PT_TMO, "read"))
+		if (!pt_poll_dsc(tape, msecs_to_jiffies(1000) / 100, PT_TMO, "read"))
 			return -EIO;
 
 		n = count;
@@ -884,7 +884,7 @@ static ssize_t pt_write(struct file *filp, const char __user *buf, size_t count,
 
 	while (count > 0) {
 
-		if (!pt_poll_dsc(tape, HZ / 100, PT_TMO, "write"))
+		if (!pt_poll_dsc(tape, msecs_to_jiffies(1000) / 100, PT_TMO, "write"))
 			return -EIO;
 
 		n = count;

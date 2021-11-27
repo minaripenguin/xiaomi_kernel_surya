@@ -108,7 +108,7 @@
 				Small change in pf_completion to round
 				up transfer size.
 	1.02    GRG 1998.06.16  Eliminated an Ugh
-	1.03    GRG 1998.08.16  Use HZ in loop timings, extra debugging
+	1.03    GRG 1998.08.16  Use msecs_to_jiffies(1000) in loop timings, extra debugging
 	1.04    GRG 1998.09.24  Added jumbo support
 
 */
@@ -185,7 +185,7 @@ module_param_array(drive3, int, NULL, 0);
 #define PF_TMO          800	/* interrupt timeout in jiffies */
 #define PF_SPIN_DEL     50	/* spin delay in micro-seconds  */
 
-#define PF_SPIN         (1000000*PF_TMO)/(HZ*PF_SPIN_DEL)
+#define PF_SPIN         (1000000*PF_TMO)/(msecs_to_jiffies(1000)*PF_SPIN_DEL)
 
 #define STAT_ERR        0x00001
 #define STAT_INDEX      0x00002
@@ -549,11 +549,11 @@ static int pf_reset(struct pf_unit *pf)
 	write_reg(pf, 6, 0xa0+0x10*pf->drive);
 	write_reg(pf, 7, 8);
 
-	pf_sleep(20 * HZ / 1000);
+	pf_sleep(20 * msecs_to_jiffies(1000) / 1000);
 
 	k = 0;
 	while ((k++ < PF_RESET_TMO) && (status_reg(pf) & STAT_BUSY))
-		pf_sleep(HZ / 10);
+		pf_sleep(msecs_to_jiffies(1000) / 10);
 
 	flg = 1;
 	for (i = 0; i < 5; i++)

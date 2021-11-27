@@ -47,7 +47,7 @@
  * The function evaluates the shift/mult pair for the scaled math
  * operations of clocksources and clockevents.
  *
- * @to and @from are frequency values in HZ. For clock sources @to is
+ * @to and @from are frequency values in msecs_to_jiffies(1000). For clock sources @to is
  * NSEC_PER_SEC == 1GHz and @from is the counter frequency. For clock
  * event @to is the counter frequency and @from is NSEC_PER_SEC.
  *

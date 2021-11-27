@@ -125,7 +125,7 @@ static int check_free_space(struct bsd_acct_struct *acct)
 		}
 	}
 
-	acct->needcheck = jiffies + ACCT_TIMEOUT*HZ;
+	acct->needcheck = jiffies + ACCT_TIMEOUT*msecs_to_jiffies(1000);
 out:
 	return acct->active;
 }

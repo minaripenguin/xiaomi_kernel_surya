@@ -351,7 +351,7 @@ static void dp_display_hdcp_cb_work(struct work_struct *work)
 
 	if (dp->suspended) {
 		pr_debug("System suspending. Delay HDCP operations\n");
-		queue_delayed_work(dp->wq, &dp->hdcp_cb_work, HZ);
+		queue_delayed_work(dp->wq, &dp->hdcp_cb_work, msecs_to_jiffies(1000));
 		return;
 	}
 
@@ -369,7 +369,7 @@ static void dp_display_hdcp_cb_work(struct work_struct *work)
 				DP_RECEIVE_PORT_1_STATUS);
 		if (sink_status < 1) {
 			pr_debug("Sink not synchronized. Queuing again then exiting\n");
-			queue_delayed_work(dp->wq, &dp->hdcp_cb_work, HZ);
+			queue_delayed_work(dp->wq, &dp->hdcp_cb_work, msecs_to_jiffies(1000));
 			return;
 		}
 	}
@@ -453,7 +453,7 @@ static void dp_display_notify_hdcp_status_cb(void *ptr,
 
 	dp->link->hdcp_status.hdcp_state = state;
 
-	queue_delayed_work(dp->wq, &dp->hdcp_cb_work, HZ/4);
+	queue_delayed_work(dp->wq, &dp->hdcp_cb_work, msecs_to_jiffies(1000)/4);
 }
 
 static void dp_display_deinitialize_hdcp(struct dp_display_private *dp)
@@ -1740,7 +1740,7 @@ static int dp_display_post_enable(struct dp_display *dp_display, void *panel)
 	}
 
 	cancel_delayed_work_sync(&dp->hdcp_cb_work);
-	queue_delayed_work(dp->wq, &dp->hdcp_cb_work, HZ);
+	queue_delayed_work(dp->wq, &dp->hdcp_cb_work, msecs_to_jiffies(1000));
 end:
 	dp->aux->state |= DP_STATE_CTRL_POWERED_ON;
 

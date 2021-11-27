@@ -267,7 +267,7 @@ static void ntp_update_frequency(void)
 	second_length		+= ntp_tick_adj;
 	second_length		+= time_freq;
 
-	tick_nsec		 = div_u64(second_length, HZ) >> NTP_SCALE_SHIFT;
+	tick_nsec		 = div_u64(second_length, 1000) >> NTP_SCALE_SHIFT;
 	new_base		 = div_u64(second_length, NTP_INTERVAL_FREQ);
 
 	/*

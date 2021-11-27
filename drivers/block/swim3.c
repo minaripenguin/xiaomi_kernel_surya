@@ -413,7 +413,7 @@ static inline void scan_track(struct floppy_state *fs)
 	out_8(&sw->intr_enable, SEEN_SECTOR);
 	out_8(&sw->control_bis, DO_ACTION);
 	/* enable intr when track found */
-	set_timeout(fs, HZ, scan_timeout);	/* enable timeout */
+	set_timeout(fs, msecs_to_jiffies(1000), scan_timeout);	/* enable timeout */
 }
 
 static inline void seek_track(struct floppy_state *fs, int n)
@@ -433,7 +433,7 @@ static inline void seek_track(struct floppy_state *fs, int n)
 	/* enable intr when seek finished */
 	out_8(&sw->intr_enable, SEEK_DONE);
 	out_8(&sw->control_bis, DO_SEEK);
-	set_timeout(fs, 3*HZ, seek_timeout);	/* enable timeout */
+	set_timeout(fs, 3*msecs_to_jiffies(1000), seek_timeout);	/* enable timeout */
 	fs->settle_time = 0;
 }
 
@@ -497,7 +497,7 @@ static inline void setup_transfer(struct floppy_state *fs)
 	/* enable intr when transfer complete */
 	out_8(&sw->intr_enable, TRANSFER_DONE);
 	out_8(&sw->control_bis, DO_ACTION);
-	set_timeout(fs, 2*HZ, xfer_timeout);	/* enable timeout */
+	set_timeout(fs, 2*msecs_to_jiffies(1000), xfer_timeout);	/* enable timeout */
 }
 
 static void act(struct floppy_state *fs)
@@ -539,7 +539,7 @@ static void act(struct floppy_state *fs)
 
 		case settling:
 			/* check for SEEK_COMPLETE after 30ms */
-			fs->settle_time = (HZ + 32) / 33;
+			fs->settle_time = (msecs_to_jiffies(1000) + 32) / 33;
 			set_timeout(fs, fs->settle_time, settle_timeout);
 			return;
 
@@ -631,7 +631,7 @@ static void settle_timeout(unsigned long data)
 		goto unlock;
 	}
 	out_8(&sw->select, RELAX);
-	if (fs->settle_time < 2*HZ) {
+	if (fs->settle_time < 2*msecs_to_jiffies(1000)) {
 		++fs->settle_time;
 		set_timeout(fs, 1, settle_timeout);
 		goto unlock;
@@ -960,8 +960,8 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 		swim3_action(fs, MOTOR_ON);
 		fs->write_prot = -1;
 		fs->cur_cyl = -1;
-		for (n = 0; n < 2 * HZ; ++n) {
-			if (n >= HZ/30 && swim3_readbit(fs, SEEK_COMPLETE))
+		for (n = 0; n < 2 * msecs_to_jiffies(1000); ++n) {
+			if (n >= msecs_to_jiffies(1000)/30 && swim3_readbit(fs, SEEK_COMPLETE))
 				break;
 			if (signal_pending(current)) {
 				err = -EINTR;
@@ -1064,7 +1064,7 @@ static int floppy_revalidate(struct gendisk *disk)
 	fs->write_prot = -1;
 	fs->cur_cyl = -1;
 	mdelay(1);
-	for (n = HZ; n > 0; --n) {
+	for (n = msecs_to_jiffies(1000); n > 0; --n) {
 		if (swim3_readbit(fs, SEEK_COMPLETE))
 			break;
 		if (signal_pending(current))

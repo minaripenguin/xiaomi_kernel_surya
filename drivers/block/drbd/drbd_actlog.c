@@ -122,7 +122,7 @@ void wait_until_done_or_force_detached(struct drbd_device *device, struct drbd_b
 	rcu_read_lock();
 	dt = rcu_dereference(bdev->disk_conf)->disk_timeout;
 	rcu_read_unlock();
-	dt = dt * HZ / 10;
+	dt = dt * msecs_to_jiffies(1000) / 10;
 	if (dt == 0)
 		dt = MAX_SCHEDULE_TIMEOUT;
 
@@ -766,7 +766,7 @@ void drbd_advance_rs_marks(struct drbd_device *device, unsigned long still_to_go
 /* It is called lazy update, so don't do write-out too often. */
 static bool lazy_bitmap_update_due(struct drbd_device *device)
 {
-	return time_after(jiffies, device->rs_last_bcast + 2*HZ);
+	return time_after(jiffies, device->rs_last_bcast + 2*msecs_to_jiffies(1000));
 }
 
 static void maybe_schedule_on_disk_bitmap_update(struct drbd_device *device, bool rs_done)
@@ -1003,7 +1003,7 @@ retry:
 			spin_unlock_irq(&device->al_lock);
 			if (sig)
 				return -EINTR;
-			if (schedule_timeout_interruptible(HZ/10))
+			if (schedule_timeout_interruptible(msecs_to_jiffies(1000)/10))
 				return -EINTR;
 			goto retry;
 		}

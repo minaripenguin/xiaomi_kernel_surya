@@ -153,7 +153,7 @@ dummy_timer(ulong vp)
 	d = (struct aoedev *)vp;
 	if (d->flags & DEVFL_TKILL)
 		return;
-	d->timer.expires = jiffies + HZ;
+	d->timer.expires = jiffies + msecs_to_jiffies(1000);
 	add_timer(&d->timer);
 }
 
@@ -469,7 +469,7 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 	init_timer(&d->timer);
 	d->timer.data = (ulong) d;
 	d->timer.function = dummy_timer;
-	d->timer.expires = jiffies + HZ;
+	d->timer.expires = jiffies + msecs_to_jiffies(1000);
 	add_timer(&d->timer);
 	d->bufpool = NULL;	/* defer to aoeblk_gdalloc */
 	d->tgt = d->targets;

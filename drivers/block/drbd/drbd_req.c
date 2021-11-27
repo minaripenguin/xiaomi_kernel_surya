@@ -1710,7 +1710,7 @@ static bool net_timeout_reached(struct drbd_request *net_req,
  *   !time_in_range(now, last_..._jif, last_..._jif + timeout).
  *
  * Side effect: once per 32bit wrap-around interval, which means every
- * ~198 days with 250 HZ, we have a window where the timeout would need
+ * ~198 days with 250 msecs_to_jiffies(1000), we have a window where the timeout would need
  * to expire twice (worst case) to become effective. Good enough.
  */
 
@@ -1733,13 +1733,13 @@ void request_timer_fn(unsigned long data)
 	}
 
 	if (get_ldev(device)) { /* implicit state.disk >= D_INCONSISTENT */
-		dt = rcu_dereference(device->ldev->disk_conf)->disk_timeout * HZ / 10;
+		dt = rcu_dereference(device->ldev->disk_conf)->disk_timeout * msecs_to_jiffies(1000) / 10;
 		put_ldev(device);
 	}
 	rcu_read_unlock();
 
 
-	ent = timeout * HZ/10 * ko_count;
+	ent = timeout * msecs_to_jiffies(1000)/10 * ko_count;
 	et = min_not_zero(dt, ent);
 
 	if (!et)

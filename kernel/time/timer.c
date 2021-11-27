@@ -113,7 +113,7 @@ EXPORT_SYMBOL(jiffies_64);
  *  7    448   2097152 ms (~34m)  16777216 ms -  134217727 ms (~4h - ~1d)
  *  8    512  16777216 ms (~4h)  134217728 ms - 1073741822 ms (~1d - ~12d)
  *
- * HZ  300
+ * msecs_to_jiffies(1000)  300
  * Level Offset  Granularity            Range
  *  0	   0         3 ms                0 ms -        210 ms
  *  1	  64        26 ms              213 ms -       1703 ms (213ms - ~1s)

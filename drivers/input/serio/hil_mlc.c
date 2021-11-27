@@ -749,7 +749,7 @@ static int hilse_donode(hil_mlc *mlc)
 		tv.tv_usec += USEC_PER_SEC * (tv.tv_sec - mlc->instart.tv_sec);
 		tv.tv_usec -= mlc->instart.tv_usec;
 		if (tv.tv_usec >= mlc->intimeout) goto sched;
-		tv.tv_usec = (mlc->intimeout - tv.tv_usec) * HZ / USEC_PER_SEC;
+		tv.tv_usec = (mlc->intimeout - tv.tv_usec) * msecs_to_jiffies(1000) / USEC_PER_SEC;
 		if (!tv.tv_usec) goto sched;
 		mod_timer(&hil_mlcs_kicker, jiffies + tv.tv_usec);
 		break;
@@ -805,7 +805,7 @@ static void hil_mlcs_timer(unsigned long data)
 	tasklet_schedule(&hil_mlcs_tasklet);
 	/* Re-insert the periodic task. */
 	if (!timer_pending(&hil_mlcs_kicker))
-		mod_timer(&hil_mlcs_kicker, jiffies + HZ);
+		mod_timer(&hil_mlcs_kicker, jiffies + msecs_to_jiffies(1000));
 }
 
 /******************** user/kernel context functions **********************/
@@ -1014,7 +1014,7 @@ int hil_mlc_unregister(hil_mlc *mlc)
 static int __init hil_mlc_init(void)
 {
 	setup_timer(&hil_mlcs_kicker, &hil_mlcs_timer, 0);
-	mod_timer(&hil_mlcs_kicker, jiffies + HZ);
+	mod_timer(&hil_mlcs_kicker, jiffies + msecs_to_jiffies(1000));
 
 	tasklet_enable(&hil_mlcs_tasklet);
 

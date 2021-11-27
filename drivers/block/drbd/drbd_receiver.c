@@ -310,7 +310,7 @@ struct page *drbd_alloc_pages(struct drbd_peer_device *peer_device, unsigned int
 			break;
 		}
 
-		if (schedule_timeout(HZ/10) == 0)
+		if (schedule_timeout(msecs_to_jiffies(1000)/10) == 0)
 			mxb = UINT_MAX;
 	}
 	finish_wait(&drbd_pp_wait, &wait);
@@ -534,7 +534,7 @@ static int drbd_recv(struct drbd_connection *connection, void *buf, size_t size)
 		if (test_bit(DISCONNECT_SENT, &connection->flags)) {
 			long t;
 			rcu_read_lock();
-			t = rcu_dereference(connection->net_conf)->ping_timeo * HZ/10;
+			t = rcu_dereference(connection->net_conf)->ping_timeo * msecs_to_jiffies(1000)/10;
 			rcu_read_unlock();
 
 			t = wait_event_timeout(connection->ping_wait, connection->cstate < C_WF_REPORT_PARAMS, t);
@@ -636,7 +636,7 @@ static struct socket *drbd_try_connect(struct drbd_connection *connection)
 	}
 
 	sock->sk->sk_rcvtimeo =
-	sock->sk->sk_sndtimeo = connect_int * HZ;
+	sock->sk->sk_sndtimeo = connect_int * msecs_to_jiffies(1000);
 	drbd_setbufsize(sock, sndbuf_size, rcvbuf_size);
 
        /* explicitly bind to the configured IP as source IP
@@ -787,7 +787,7 @@ static struct socket *drbd_wait_for_connect(struct drbd_connection *connection, 
 	connect_int = nc->connect_int;
 	rcu_read_unlock();
 
-	timeo = connect_int * HZ;
+	timeo = connect_int * msecs_to_jiffies(1000);
 	/* 28.5% random jitter */
 	timeo += (prandom_u32() & 1) ? timeo / 7 : -timeo / 7;
 
@@ -832,7 +832,7 @@ static int receive_first_packet(struct drbd_connection *connection, struct socke
 		rcu_read_unlock();
 		return -EIO;
 	}
-	sock->sk->sk_rcvtimeo = nc->ping_timeo * 4 * HZ / 10;
+	sock->sk->sk_rcvtimeo = nc->ping_timeo * 4 * msecs_to_jiffies(1000) / 10;
 	rcu_read_unlock();
 
 	err = drbd_recv_short(sock, connection->data.rbuf, header_size, 0);
@@ -883,7 +883,7 @@ static bool connection_established(struct drbd_connection *connection,
 
 	rcu_read_lock();
 	nc = rcu_dereference(connection->net_conf);
-	timeout = (nc->sock_check_timeo ?: nc->ping_timeo) * HZ / 10;
+	timeout = (nc->sock_check_timeo ?: nc->ping_timeo) * msecs_to_jiffies(1000) / 10;
 	rcu_read_unlock();
 	schedule_timeout_interruptible(timeout);
 
@@ -917,7 +917,7 @@ int drbd_connected(struct drbd_peer_device *peer_device)
 	clear_bit(USE_DEGR_WFC_T, &device->flags);
 	clear_bit(RESIZE_PENDING, &device->flags);
 	atomic_set(&device->ap_in_flight, 0);
-	mod_timer(&device->request_timer, jiffies + HZ); /* just start it here. */
+	mod_timer(&device->request_timer, jiffies + msecs_to_jiffies(1000)); /* just start it here. */
 	return err;
 }
 
@@ -1042,7 +1042,7 @@ randomize:
 	msock.socket->sk->sk_priority = TC_PRIO_INTERACTIVE;
 
 	/* NOT YET ...
-	 * sock.socket->sk->sk_sndtimeo = connection->net_conf->timeout*HZ/10;
+	 * sock.socket->sk->sk_sndtimeo = connection->net_conf->timeout*msecs_to_jiffies(1000)/10;
 	 * sock.socket->sk->sk_rcvtimeo = MAX_SCHEDULE_TIMEOUT;
 	 * first set it to the P_CONNECTION_FEATURES timeout,
 	 * which we set to 4x the configured ping_timeout. */
@@ -1050,10 +1050,10 @@ randomize:
 	nc = rcu_dereference(connection->net_conf);
 
 	sock.socket->sk->sk_sndtimeo =
-	sock.socket->sk->sk_rcvtimeo = nc->ping_timeo*4*HZ/10;
+	sock.socket->sk->sk_rcvtimeo = nc->ping_timeo*4*msecs_to_jiffies(1000)/10;
 
-	msock.socket->sk->sk_rcvtimeo = nc->ping_int*HZ;
-	timeout = nc->timeout * HZ / 10;
+	msock.socket->sk->sk_rcvtimeo = nc->ping_int*msecs_to_jiffies(1000);
+	timeout = nc->timeout * msecs_to_jiffies(1000) / 10;
 	discard_my_data = nc->discard_my_data;
 	rcu_read_unlock();
 
@@ -2298,7 +2298,7 @@ static int wait_for_and_update_peer_seq(struct drbd_peer_device *peer_device, co
 		prepare_to_wait(&device->seq_wait, &wait, TASK_INTERRUPTIBLE);
 		spin_unlock(&device->peer_seq_lock);
 		rcu_read_lock();
-		timeout = rcu_dereference(peer_device->connection->net_conf)->ping_timeo*HZ/10;
+		timeout = rcu_dereference(peer_device->connection->net_conf)->ping_timeo*msecs_to_jiffies(1000)/10;
 		rcu_read_unlock();
 		timeout = schedule_timeout(timeout);
 		spin_lock(&device->peer_seq_lock);
@@ -2693,7 +2693,7 @@ bool drbd_rs_c_min_rate_throttle(struct drbd_device *device)
 		else
 			rs_left = drbd_bm_total_weight(device) - device->rs_failed;
 
-		dt = ((long)jiffies - (long)device->rs_mark_time[i]) / HZ;
+		dt = ((long)jiffies - (long)device->rs_mark_time[i]) / msecs_to_jiffies(1000);
 		if (!dt)
 			dt++;
 		db = device->rs_mark_left[i] - rs_left;
@@ -2888,7 +2888,7 @@ static int receive_DataRequest(struct drbd_connection *connection, struct packet
 	update_receiver_timing_details(connection, drbd_rs_should_slow_down);
 	if (device->state.peer != R_PRIMARY
 	&& drbd_rs_should_slow_down(device, sector, false))
-		schedule_timeout_uninterruptible(HZ/10);
+		schedule_timeout_uninterruptible(msecs_to_jiffies(1000)/10);
 	update_receiver_timing_details(connection, drbd_rs_begin_io);
 	if (drbd_rs_begin_io(device, sector))
 		goto out_free_e;
@@ -3875,7 +3875,7 @@ static int receive_SyncParam(struct drbd_connection *connection, struct packet_i
 			new_disk_conf->c_fill_target = be32_to_cpu(p->c_fill_target);
 			new_disk_conf->c_max_rate = be32_to_cpu(p->c_max_rate);
 
-			fifo_size = (new_disk_conf->c_plan_ahead * 10 * SLEEP_TIME) / HZ;
+			fifo_size = (new_disk_conf->c_plan_ahead * 10 * SLEEP_TIME) / msecs_to_jiffies(1000);
 			if (fifo_size != device->rs_plan_s->size) {
 				new_plan = fifo_alloc(fifo_size);
 				if (!new_plan) {
@@ -5465,7 +5465,7 @@ int drbd_receiver(struct drbd_thread *thi)
 		h = conn_connect(connection);
 		if (h == 0) {
 			conn_disconnect(connection);
-			schedule_timeout_interruptible(HZ);
+			schedule_timeout_interruptible(msecs_to_jiffies(1000));
 		}
 		if (h == -1) {
 			drbd_warn(connection, "Discarding network configuration.\n");
@@ -5542,7 +5542,7 @@ static int got_Ping(struct drbd_connection *connection, struct packet_info *pi)
 static int got_PingAck(struct drbd_connection *connection, struct packet_info *pi)
 {
 	/* restore idle timeout */
-	connection->meta.socket->sk->sk_rcvtimeo = connection->net_conf->ping_int*HZ;
+	connection->meta.socket->sk->sk_rcvtimeo = connection->net_conf->ping_int*msecs_to_jiffies(1000);
 	if (!test_and_set_bit(GOT_PING_ACK, &connection->flags))
 		wake_up(&connection->ping_wait);
 
@@ -5756,7 +5756,7 @@ static int got_BarrierAck(struct drbd_connection *connection, struct packet_info
 		if (device->state.conn == C_AHEAD &&
 		    atomic_read(&device->ap_in_flight) == 0 &&
 		    !test_and_set_bit(AHEAD_TO_SYNC_SOURCE, &device->flags)) {
-			device->start_resync_timer.expires = jiffies + HZ;
+			device->start_resync_timer.expires = jiffies + msecs_to_jiffies(1000);
 			add_timer(&device->start_resync_timer);
 		}
 	}
@@ -5837,7 +5837,7 @@ static void set_rcvtimeo(struct drbd_connection *connection, bool ping_timeout)
 	t = ping_timeout ? nc->ping_timeo : nc->ping_int;
 	rcu_read_unlock();
 
-	t *= HZ;
+	t *= msecs_to_jiffies(1000);
 	if (ping_timeout)
 		t /= 10;
 
@@ -5926,7 +5926,7 @@ int drbd_ack_receiver(struct drbd_thread *thi)
 			if (test_bit(DISCONNECT_SENT, &connection->flags)) {
 				long t;
 				rcu_read_lock();
-				t = rcu_dereference(connection->net_conf)->ping_timeo * HZ/10;
+				t = rcu_dereference(connection->net_conf)->ping_timeo * msecs_to_jiffies(1000)/10;
 				rcu_read_unlock();
 
 				t = wait_event_timeout(connection->ping_wait,

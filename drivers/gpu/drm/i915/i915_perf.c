@@ -2060,7 +2060,7 @@ static int i915_oa_stream_init(struct i915_perf_stream *stream,
 	 * Using the same limiting factors as printk_ratelimit()
 	 */
 	ratelimit_state_init(&dev_priv->perf.oa.spurious_report_rs,
-			     5 * HZ, 10);
+			     5 * msecs_to_jiffies(1000), 10);
 	/* Since we use a DRM_NOTE for spurious reports it would be
 	 * inconsistent to let __ratelimit() automatically print a warning for
 	 * throttling.

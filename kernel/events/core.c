@@ -451,7 +451,7 @@ int sysctl_perf_event_mlock __read_mostly = 512 + (PAGE_SIZE / 1024); /* 'free' 
 
 int sysctl_perf_event_sample_rate __read_mostly	= DEFAULT_MAX_SAMPLE_RATE;
 
-static int max_samples_per_tick __read_mostly	= DIV_ROUND_UP(DEFAULT_MAX_SAMPLE_RATE, HZ);
+static int max_samples_per_tick __read_mostly	= DIV_ROUND_UP(DEFAULT_MAX_SAMPLE_RATE, 1000);
 static int perf_sample_period_ns __read_mostly	= DEFAULT_SAMPLE_PERIOD_NS;
 
 static int perf_sample_allowed_ns __read_mostly =
@@ -487,7 +487,7 @@ int perf_proc_update_handler(struct ctl_table *table, int write,
 	if (ret || !write)
 		return ret;
 
-	max_samples_per_tick = DIV_ROUND_UP(sysctl_perf_event_sample_rate, HZ);
+	max_samples_per_tick = DIV_ROUND_UP(sysctl_perf_event_sample_rate, 1000);
 	perf_sample_period_ns = NSEC_PER_SEC / sysctl_perf_event_sample_rate;
 	update_perf_cpu_limits();
 
@@ -581,7 +581,7 @@ void perf_sample_event_took(u64 sample_len_ns)
 	WRITE_ONCE(perf_sample_allowed_ns, avg_len);
 	WRITE_ONCE(max_samples_per_tick, max);
 
-	sysctl_perf_event_sample_rate = max * HZ;
+	sysctl_perf_event_sample_rate = max * msecs_to_jiffies(1000);
 	perf_sample_period_ns = NSEC_PER_SEC / sysctl_perf_event_sample_rate;
 
 	if (!irq_work_queue(&perf_duration_work)) {
@@ -1059,7 +1059,7 @@ list_update_cgroup_event(struct perf_event *event,
  * set default to be dependent on timer tick just
  * like original code
  */
-#define PERF_CPU_HRTIMER (1000 / HZ)
+#define PERF_CPU_HRTIMER (1)
 /*
  * function must be called with interrupts disabled
  */
@@ -3441,7 +3441,7 @@ static u64 perf_calculate_period(struct perf_event *event, u64 nsec, u64 count)
 	sec_fls = 30;
 
 	/*
-	 * We got @count in @nsec, with a target of sample_freq HZ
+	 * We got @count in @nsec, with a target of sample_freq msecs_to_jiffies(1000)
 	 * the target period becomes:
 	 *
 	 *             @count * 10^9
@@ -4234,7 +4234,7 @@ static void unaccount_event(struct perf_event *event)
 
 	if (dec) {
 		if (!atomic_add_unless(&perf_sched_count, -1, 1))
-			schedule_delayed_work(&perf_sched_work, HZ);
+			schedule_delayed_work(&perf_sched_work, msecs_to_jiffies(1000));
 	}
 
 	unaccount_event_cpu(event, event->cpu);

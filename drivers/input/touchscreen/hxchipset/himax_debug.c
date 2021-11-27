@@ -1522,7 +1522,7 @@ void himax_ts_diag_func(void)
 	diag_max_cnt++;
 
 	if (dsram_type >= 1 && dsram_type <= 3)
-		queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 1 / 10 * HZ);
+		queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 1 / 10 * msecs_to_jiffies(1000));
 	else if (dsram_type == 4) {
 		for (i = 0; i < x_channel * y_channel; i++) {
 			memset(temp_buf, '\0', sizeof(temp_buf));
@@ -1556,7 +1556,7 @@ void himax_ts_diag_func(void)
 			write_counter++;
 
 			if (write_counter < write_max_count)
-				queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 1 / 10 * HZ);
+				queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 1 / 10 * msecs_to_jiffies(1000));
 			else {
 				filp_close(diag_sram_fn, NULL);
 				write_counter = 0;
@@ -1688,7 +1688,7 @@ static ssize_t himax_diag_write(struct file *filp, const char __user *buff, size
 		}
 
 		/* 2. Start DSRAM thread */
-		queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 2 * HZ / 100);
+		queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 2 * msecs_to_jiffies(1000) / 100);
 		I("%s: Start get raw data in DSRAM\n", __func__);
 
 		if (storage_type == 4)
@@ -1717,7 +1717,7 @@ static ssize_t himax_diag_write(struct file *filp, const char __user *buff, size
 		if (g_switch_mode == 2)
 			g_core_fp.fp_diag_register_set(command[0], storage_type);
 
-		queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 2 * HZ / 100);
+		queue_delayed_work(private_ts->himax_diag_wq, &private_ts->himax_diag_delay_wrok, 2 * msecs_to_jiffies(1000) / 100);
 		DSRAM_Flag = true;
 	} else {
 		/* set diag flag */

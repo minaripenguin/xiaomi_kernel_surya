@@ -6772,7 +6772,7 @@ static void gen6_update_ring_freq(struct drm_i915_private *dev_priv)
 	min_ring_freq = mult_frac(min_ring_freq, 8, 3);
 
 	if (IS_GEN9_BC(dev_priv) || IS_CANNONLAKE(dev_priv)) {
-		/* Convert GT frequency to 50 HZ units */
+		/* Convert GT frequency to 50 msecs_to_jiffies(1000) units */
 		min_gpu_freq = dev_priv->rps.min_freq / GEN9_FREQ_SCALER;
 		max_gpu_freq = dev_priv->rps.max_freq / GEN9_FREQ_SCALER;
 	} else {

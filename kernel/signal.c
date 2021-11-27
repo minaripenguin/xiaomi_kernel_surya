@@ -235,7 +235,7 @@ int next_signal(struct sigpending *pending, sigset_t *mask)
 
 static inline void print_dropped_signal(int sig)
 {
-	static DEFINE_RATELIMIT_STATE(ratelimit_state, 5 * HZ, 10);
+	static DEFINE_RATELIMIT_STATE(ratelimit_state, 5 * 1000, 10);
 
 	if (!print_fatal_signals)
 		return;

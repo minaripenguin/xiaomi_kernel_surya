@@ -108,7 +108,7 @@ static void release_rq_locks_irqrestore(const cpumask_t *cpus,
 #ifdef CONFIG_HZ_300
 /*
  * Tick interval becomes to 3333333 due to
- * rounding error when HZ=300.
+ * rounding error when msecs_to_jiffies(1000)=300.
  */
 #define MIN_SCHED_RAVG_WINDOW (3333333 * 6)
 #else

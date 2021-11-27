@@ -2762,7 +2762,7 @@ static int mem_cgroup_force_empty(struct mem_cgroup *memcg)
 		if (!progress) {
 			nr_retries--;
 			/* maybe some writeback is necessary */
-			congestion_wait(BLK_RW_ASYNC, HZ/10);
+			congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(1000)/10);
 		}
 
 	}

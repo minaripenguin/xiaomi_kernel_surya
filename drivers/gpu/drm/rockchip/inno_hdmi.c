@@ -688,7 +688,7 @@ static int inno_hdmi_i2c_read(struct inno_hdmi *hdmi, struct i2c_msg *msgs)
 	u8 *buf = msgs->buf;
 	int ret;
 
-	ret = wait_for_completion_timeout(&hdmi->i2c->cmp, HZ / 10);
+	ret = wait_for_completion_timeout(&hdmi->i2c->cmp, msecs_to_jiffies(1000) / 10);
 	if (!ret)
 		return -EAGAIN;
 

@@ -162,7 +162,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	 * least DRBD_SYNC_MARK_STEP time before it will be modified. */
 	/* ------------------------ ~18s average ------------------------ */
 	i = (device->rs_last_mark + 2) % DRBD_SYNC_MARKS;
-	dt = (jiffies - device->rs_mark_time[i]) / HZ;
+	dt = (jiffies - device->rs_mark_time[i]) / msecs_to_jiffies(1000);
 	if (dt > 180)
 		stalled = 1;
 
@@ -182,7 +182,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	if (drbd_proc_details >= 1) {
 		/* this is what drbd_rs_should_slow_down() uses */
 		i = (device->rs_last_mark + DRBD_SYNC_MARKS-1) % DRBD_SYNC_MARKS;
-		dt = (jiffies - device->rs_mark_time[i]) / HZ;
+		dt = (jiffies - device->rs_mark_time[i]) / msecs_to_jiffies(1000);
 		if (!dt)
 			dt++;
 		db = device->rs_mark_left[i] - rs_left;
@@ -194,7 +194,7 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	/* --------------------- long term average ---------------------- */
 	/* mean speed since syncer started
 	 * we do account for PausedSync periods */
-	dt = (jiffies - device->rs_start - device->rs_paused) / HZ;
+	dt = (jiffies - device->rs_start - device->rs_paused) / msecs_to_jiffies(1000);
 	if (dt == 0)
 		dt = 1;
 	db = rs_total - rs_left;

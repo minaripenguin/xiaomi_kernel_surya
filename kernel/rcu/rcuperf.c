@@ -420,7 +420,7 @@ rcu_perf_writer(void *arg)
 	sched_setscheduler_nocheck(current, SCHED_FIFO, &sp);
 
 	if (holdoff)
-		schedule_timeout_uninterruptible(holdoff * HZ);
+		schedule_timeout_uninterruptible(holdoff * msecs_to_jiffies(1000));
 
 	t = ktime_get_mono_fast_ns();
 	if (atomic_inc_return(&n_rcu_perf_writer_started) >= nrealwriters) {

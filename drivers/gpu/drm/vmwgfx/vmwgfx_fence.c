@@ -784,7 +784,7 @@ int vmw_fence_obj_wait_ioctl(struct drm_device *dev, void *data,
 	struct vmw_fence_obj *fence;
 	struct ttm_object_file *tfile = vmw_fpriv(file_priv)->tfile;
 	int ret;
-	uint64_t wait_timeout = ((uint64_t)arg->timeout_us * HZ);
+	uint64_t wait_timeout = ((uint64_t)arg->timeout_us * msecs_to_jiffies(1000));
 
 	/*
 	 * 64-bit division not present on 32-bit systems, so do an

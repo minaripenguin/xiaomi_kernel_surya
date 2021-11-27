@@ -391,7 +391,7 @@ void note_interrupt(struct irq_desc *desc, irqreturn_t action_ret)
 		 * otherwise the counter becomes a doomsday timer for otherwise
 		 * working systems
 		 */
-		if (time_after(jiffies, desc->last_unhandled + HZ/10))
+		if (time_after(jiffies, desc->last_unhandled + msecs_to_jiffies(1000)/10))
 			desc->irqs_unhandled = 1;
 		else
 			desc->irqs_unhandled++;

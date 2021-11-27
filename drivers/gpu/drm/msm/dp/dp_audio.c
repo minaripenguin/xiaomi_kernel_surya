@@ -554,7 +554,7 @@ static int dp_audio_codec_ready(struct platform_device *pdev)
 	}
 
 	queue_delayed_work(audio->notify_workqueue,
-			&audio->notify_delayed_work, HZ/4);
+			&audio->notify_delayed_work, msecs_to_jiffies(1000)/4);
 end:
 	return rc;
 }
@@ -675,7 +675,7 @@ static int dp_audio_notify(struct dp_audio_private *audio, u32 state)
 	if (state == EXT_DISPLAY_CABLE_CONNECT)
 		goto end;
 
-	rc = wait_for_completion_timeout(&audio->hpd_comp, HZ * 4);
+	rc = wait_for_completion_timeout(&audio->hpd_comp, msecs_to_jiffies(1000) * 4);
 	if (!rc) {
 		pr_err("timeout. state=%d err=%d\n", state, rc);
 		rc = -ETIMEDOUT;

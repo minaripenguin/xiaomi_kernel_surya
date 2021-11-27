@@ -1147,8 +1147,8 @@ static void vdc_ldc_reset(struct vdc_port *port)
 
 	if (port->ldc_timeout)
 		mod_timer(&port->ldc_reset_timer,
-			  round_jiffies(jiffies + HZ * port->ldc_timeout));
-	mod_timer(&port->vio.timer, round_jiffies(jiffies + HZ));
+			  round_jiffies(jiffies + msecs_to_jiffies(1000) * port->ldc_timeout));
+	mod_timer(&port->vio.timer, round_jiffies(jiffies + msecs_to_jiffies(1000)));
 	return;
 
 err_free_ldc:

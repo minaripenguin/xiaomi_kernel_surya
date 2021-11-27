@@ -146,7 +146,7 @@ static void omap_kp_tasklet(unsigned long data)
 	if (key_down) {
 		/* some key is pressed - keep irq disabled and use timer
 		 * to poll the keypad */
-		mod_timer(&omap_kp_data->timer, jiffies + HZ / 20);
+		mod_timer(&omap_kp_data->timer, jiffies + msecs_to_jiffies(1000) / 20);
 	} else {
 		/* enable interrupts */
 		omap_writew(0, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);

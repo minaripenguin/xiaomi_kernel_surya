@@ -330,7 +330,7 @@ static void *vmw_local_fifo_reserve(struct vmw_private *dev_priv,
 
 			else if (vmw_fifo_is_full(dev_priv, bytes)) {
 				ret = vmw_fifo_wait(dev_priv, bytes,
-						    false, 3 * HZ);
+						    false, 3 * msecs_to_jiffies(1000));
 				if (unlikely(ret != 0))
 					goto out_err;
 			} else
@@ -342,7 +342,7 @@ static void *vmw_local_fifo_reserve(struct vmw_private *dev_priv,
 				reserve_in_place = true;
 			else {
 				ret = vmw_fifo_wait(dev_priv, bytes,
-						    false, 3 * HZ);
+						    false, 3 * msecs_to_jiffies(1000));
 				if (unlikely(ret != 0))
 					goto out_err;
 			}
@@ -549,7 +549,7 @@ int vmw_fifo_send_fence(struct vmw_private *dev_priv, uint32_t *seqno)
 		*seqno = atomic_read(&dev_priv->marker_seq);
 		ret = -ENOMEM;
 		(void)vmw_fallback_wait(dev_priv, false, true, *seqno,
-					false, 3*HZ);
+					false, 3*msecs_to_jiffies(1000));
 		goto out_err;
 	}
 

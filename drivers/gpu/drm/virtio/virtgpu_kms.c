@@ -110,7 +110,7 @@ static void virtio_gpu_get_capsets(struct virtio_gpu_device *vgdev,
 	for (i = 0; i < num_capsets; i++) {
 		virtio_gpu_cmd_get_capset_info(vgdev, i);
 		ret = wait_event_timeout(vgdev->resp_wq,
-					 vgdev->capsets[i].id > 0, 5 * HZ);
+					 vgdev->capsets[i].id > 0, 5 * msecs_to_jiffies(1000));
 		if (ret == 0) {
 			DRM_ERROR("timed out waiting for cap set %d\n", i);
 			spin_lock(&vgdev->display_info_lock);
@@ -223,7 +223,7 @@ int virtio_gpu_driver_load(struct drm_device *dev, unsigned long flags)
 		virtio_gpu_get_capsets(vgdev, num_capsets);
 	virtio_gpu_cmd_get_display_info(vgdev);
 	wait_event_timeout(vgdev->resp_wq, !vgdev->display_info_pending,
-			   5 * HZ);
+			   5 * msecs_to_jiffies(1000));
 	if (virtio_gpu_fbdev)
 		virtio_gpu_fbdev_init(vgdev);
 

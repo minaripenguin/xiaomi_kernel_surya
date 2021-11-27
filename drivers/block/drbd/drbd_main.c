@@ -141,7 +141,7 @@ spinlock_t   drbd_pp_lock;
 int          drbd_pp_vacant;
 wait_queue_head_t drbd_pp_wait;
 
-DEFINE_RATELIMIT_STATE(drbd_ratelimit_state, 5 * HZ, 5);
+DEFINE_RATELIMIT_STATE(drbd_ratelimit_state, 5 * msecs_to_jiffies(1000), 5);
 
 static const struct block_device_operations drbd_ops = {
 	.owner =   THIS_MODULE,
@@ -3446,7 +3446,7 @@ int drbd_md_read(struct drbd_device *device, struct drbd_backing_dev *bdev)
 void drbd_md_mark_dirty_(struct drbd_device *device, unsigned int line, const char *func)
 {
 	if (!test_and_set_bit(MD_DIRTY, &device->flags)) {
-		mod_timer(&device->md_sync_timer, jiffies + HZ);
+		mod_timer(&device->md_sync_timer, jiffies + msecs_to_jiffies(1000));
 		device->last_md_mark_dirty.line = line;
 		device->last_md_mark_dirty.func = func;
 	}
@@ -3455,7 +3455,7 @@ void drbd_md_mark_dirty_(struct drbd_device *device, unsigned int line, const ch
 void drbd_md_mark_dirty(struct drbd_device *device)
 {
 	if (!test_and_set_bit(MD_DIRTY, &device->flags))
-		mod_timer(&device->md_sync_timer, jiffies + 5*HZ);
+		mod_timer(&device->md_sync_timer, jiffies + 5*msecs_to_jiffies(1000));
 }
 #endif
 
@@ -3820,7 +3820,7 @@ int drbd_wait_misc(struct drbd_device *device, struct drbd_interval *i)
 		rcu_read_unlock();
 		return -ETIMEDOUT;
 	}
-	timeout = nc->ko_count ? nc->timeout * HZ / 10 * nc->ko_count : MAX_SCHEDULE_TIMEOUT;
+	timeout = nc->ko_count ? nc->timeout * msecs_to_jiffies(1000) / 10 * nc->ko_count : MAX_SCHEDULE_TIMEOUT;
 	rcu_read_unlock();
 
 	/* Indicate to wake up device->misc_wait on progress.  */

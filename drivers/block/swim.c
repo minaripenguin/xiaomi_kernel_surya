@@ -327,7 +327,7 @@ static inline void swim_motor(struct swim __iomem *base,
 
 		swim_action(base, MOTOR_ON);
 
-		for (i = 0; i < 2*HZ; i++) {
+		for (i = 0; i < 2*msecs_to_jiffies(1000); i++) {
 			swim_select(base, RELAX);
 			if (swim_readbit(base, MOTOR_ON))
 				break;
@@ -346,7 +346,7 @@ static inline void swim_eject(struct swim __iomem *base)
 
 	swim_action(base, EJECT);
 
-	for (i = 0; i < 2*HZ; i++) {
+	for (i = 0; i < 2*msecs_to_jiffies(1000); i++) {
 		swim_select(base, RELAX);
 		if (!swim_readbit(base, DISK_IN))
 			break;
@@ -372,7 +372,7 @@ static inline int swim_step(struct swim __iomem *base)
 
 	swim_action(base, STEP);
 
-	for (wait = 0; wait < HZ; wait++) {
+	for (wait = 0; wait < msecs_to_jiffies(1000); wait++) {
 
 		current->state = TASK_INTERRUPTIBLE;
 		schedule_timeout(1);

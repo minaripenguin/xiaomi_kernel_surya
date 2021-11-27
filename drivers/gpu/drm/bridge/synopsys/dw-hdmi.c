@@ -264,7 +264,7 @@ static int dw_hdmi_i2c_read(struct dw_hdmi *hdmi,
 			hdmi_writeb(hdmi, HDMI_I2CM_OPERATION_READ,
 				    HDMI_I2CM_OPERATION);
 
-		stat = wait_for_completion_timeout(&i2c->cmp, HZ / 10);
+		stat = wait_for_completion_timeout(&i2c->cmp, msecs_to_jiffies(1000) / 10);
 		if (!stat)
 			return -EAGAIN;
 
@@ -301,7 +301,7 @@ static int dw_hdmi_i2c_write(struct dw_hdmi *hdmi,
 		hdmi_writeb(hdmi, HDMI_I2CM_OPERATION_WRITE,
 			    HDMI_I2CM_OPERATION);
 
-		stat = wait_for_completion_timeout(&i2c->cmp, HZ / 10);
+		stat = wait_for_completion_timeout(&i2c->cmp, msecs_to_jiffies(1000) / 10);
 		if (!stat)
 			return -EAGAIN;
 

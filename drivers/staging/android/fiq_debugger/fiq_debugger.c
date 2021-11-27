@@ -600,7 +600,7 @@ static void fiq_debugger_handle_wakeup(struct fiq_debugger_state *state)
 		fiq_debugger_uart_enable(state);
 		state->uart_enabled = true;
 		fiq_debugger_disable_wakeup_irq(state);
-		mod_timer(&state->sleep_timer, jiffies + HZ / 2);
+		mod_timer(&state->sleep_timer, jiffies + msecs_to_jiffies(1000) / 2);
 	}
 	spin_unlock_irqrestore(&state->sleep_timer_lock, flags);
 }
@@ -641,7 +641,7 @@ static void fiq_debugger_handle_irq_context(struct fiq_debugger_state *state)
 
 		spin_lock_irqsave(&state->sleep_timer_lock, flags);
 		__pm_stay_awake(&state->debugger_wake_src);
-		mod_timer(&state->sleep_timer, jiffies + HZ * 5);
+		mod_timer(&state->sleep_timer, jiffies + msecs_to_jiffies(1000) * 5);
 		spin_unlock_irqrestore(&state->sleep_timer_lock, flags);
 	}
 	fiq_debugger_handle_console_irq_context(state);

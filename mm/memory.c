@@ -526,7 +526,7 @@ static void print_bad_pte(struct vm_area_struct *vma, unsigned long addr,
 		nr_shown = 0;
 	}
 	if (nr_shown++ == 0)
-		resume = jiffies + 60 * HZ;
+		resume = jiffies + 60 * msecs_to_jiffies(1000);
 
 	mapping = vma->vm_file ? vma->vm_file->f_mapping : NULL;
 	index = linear_page_index(vma, addr);

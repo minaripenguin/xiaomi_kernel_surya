@@ -83,7 +83,7 @@ static int psb_2d_wait_available(struct drm_psb_private *dev_priv,
 			  unsigned size)
 {
 	uint32_t avail = PSB_RSGX32(PSB_CR_2D_SOCIF);
-	unsigned long t = jiffies + HZ;
+	unsigned long t = jiffies + msecs_to_jiffies(1000);
 
 	while (avail < size) {
 		avail = PSB_RSGX32(PSB_CR_2D_SOCIF);
@@ -325,7 +325,7 @@ int psbfb_sync(struct fb_info *info)
 	struct psb_framebuffer *psbfb = &fbdev->pfb;
 	struct drm_device *dev = psbfb->base.dev;
 	struct drm_psb_private *dev_priv = dev->dev_private;
-	unsigned long _end = jiffies + HZ;
+	unsigned long _end = jiffies + msecs_to_jiffies(1000);
 	int busy = 0;
 	unsigned long flags;
 

@@ -40,7 +40,7 @@ static int igt_add_request(void *arg)
 	mutex_lock(&i915->drm.struct_mutex);
 	request = mock_request(i915->engine[RCS],
 			       i915->kernel_context,
-			       HZ / 10);
+			       msecs_to_jiffies(1000) / 10);
 	if (!request)
 		goto out_unlock;
 
@@ -54,7 +54,7 @@ out_unlock:
 
 static int igt_wait_request(void *arg)
 {
-	const long T = HZ / 4;
+	const long T = msecs_to_jiffies(1000) / 4;
 	struct drm_i915_private *i915 = arg;
 	struct drm_i915_gem_request *request;
 	int err = -EINVAL;
@@ -124,7 +124,7 @@ out_unlock:
 
 static int igt_fence_wait(void *arg)
 {
-	const long T = HZ / 4;
+	const long T = msecs_to_jiffies(1000) / 4;
 	struct drm_i915_private *i915 = arg;
 	struct drm_i915_gem_request *request;
 	int err = -EINVAL;
@@ -191,7 +191,7 @@ static int igt_request_rewind(void *arg)
 
 	mutex_lock(&i915->drm.struct_mutex);
 	ctx[0] = mock_context(i915, "A");
-	request = mock_request(i915->engine[RCS], ctx[0], 2 * HZ);
+	request = mock_request(i915->engine[RCS], ctx[0], 2 * msecs_to_jiffies(1000));
 	if (!request) {
 		err = -ENOMEM;
 		goto err_context_0;
@@ -219,7 +219,7 @@ static int igt_request_rewind(void *arg)
 
 	mutex_unlock(&i915->drm.struct_mutex);
 
-	if (i915_wait_request(vip, 0, HZ) == -ETIME) {
+	if (i915_wait_request(vip, 0, msecs_to_jiffies(1000)) == -ETIME) {
 		pr_err("timed out waiting for high priority request, vip.seqno=%d, current seqno=%d\n",
 		       vip->global_seqno, intel_engine_get_seqno(i915->engine[RCS]));
 		goto err;

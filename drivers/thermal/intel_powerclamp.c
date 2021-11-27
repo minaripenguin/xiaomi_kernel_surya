@@ -453,7 +453,7 @@ balance:
 }
 
 /*
- * 1 HZ polling while clamping is active, useful for userspace
+ * 1 msecs_to_jiffies(1000) polling while clamping is active, useful for userspace
  * to monitor actual idle ratio.
  */
 static void poll_pkg_cstate(struct work_struct *dummy);
@@ -486,7 +486,7 @@ static void poll_pkg_cstate(struct work_struct *dummy)
 	tsc_last = tsc_now;
 
 	if (true == clamping)
-		schedule_delayed_work(&poll_pkg_cstate_work, HZ);
+		schedule_delayed_work(&poll_pkg_cstate_work, msecs_to_jiffies(1000));
 }
 
 static void start_power_clamp_worker(unsigned long cpu)

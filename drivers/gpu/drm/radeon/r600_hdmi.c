@@ -89,7 +89,7 @@ static struct r600_audio_pin r600_audio_status(struct radeon_device *rdev)
 		status.bits_per_sample = 16;
 	}
 
-	/* current sampling rate in HZ */
+	/* current sampling rate in msecs_to_jiffies(1000) */
 	if (value & 0x4000)
 		status.rate = 44100;
 	else

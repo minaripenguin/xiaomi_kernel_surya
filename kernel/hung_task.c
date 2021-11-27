@@ -244,7 +244,7 @@ static long hung_timeout_jiffies(unsigned long last_checked,
 				 unsigned long timeout)
 {
 	/* timeout of 0 will disable the watchdog */
-	return timeout ? last_checked - jiffies + timeout * HZ :
+	return timeout ? last_checked - jiffies + timeout * msecs_to_jiffies(1000) :
 		MAX_SCHEDULE_TIMEOUT;
 }
 

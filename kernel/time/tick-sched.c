@@ -501,7 +501,7 @@ void __init tick_nohz_init(void)
  */
 #ifdef CONFIG_NO_HZ_COMMON
 /*
- * NO HZ enabled ?
+ * NO msecs_to_jiffies(1000) enabled ?
  */
 bool tick_nohz_enabled __read_mostly  = true;
 unsigned long tick_nohz_active  __read_mostly;

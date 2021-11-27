@@ -202,7 +202,7 @@ static int probe_maple_kbd(struct device *dev)
 		goto fail_register;
 
 	/* Maple polling is locked to VBLANK - which may be just 50/s */
-	maple_getcond_callback(mdev, dc_kbd_callback, HZ/50,
+	maple_getcond_callback(mdev, dc_kbd_callback, msecs_to_jiffies(1000)/50,
 		MAPLE_FUNC_KEYBOARD);
 
 	mdev->driver = mdrv;

@@ -70,7 +70,7 @@ struct continuous {
 	u32 speed; /* number of coords per second */
 };
 
-#define WM_READS(sp) ((sp / HZ) + 1)
+#define WM_READS(sp) ((sp / msecs_to_jiffies(1000)) + 1)
 
 static const struct continuous cinfo[] = {
 	{WM9705_ID2, 0, WM_READS(94), 94},

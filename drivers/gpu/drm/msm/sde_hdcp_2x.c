@@ -265,16 +265,16 @@ static void sde_hdcp_2x_wait_for_response(struct sde_hdcp_2x_ctrl *hdcp)
 	switch (hdcp->last_msg) {
 	case AKE_SEND_H_PRIME:
 		if (hdcp->no_stored_km)
-			hdcp->wait_timeout_ms = HZ;
+			hdcp->wait_timeout_ms = msecs_to_jiffies(1000);
 		else
-			hdcp->wait_timeout_ms = HZ / 4;
+			hdcp->wait_timeout_ms = msecs_to_jiffies(1000) / 4;
 		break;
 	case AKE_SEND_PAIRING_INFO:
-		hdcp->wait_timeout_ms = HZ / 4;
+		hdcp->wait_timeout_ms = msecs_to_jiffies(1000) / 4;
 		break;
 	case REP_SEND_RECV_ID_LIST:
 		if (!hdcp->authenticated)
-			hdcp->wait_timeout_ms = HZ * 3;
+			hdcp->wait_timeout_ms = msecs_to_jiffies(1000) * 3;
 		else
 			hdcp->wait_timeout_ms = 0;
 		break;

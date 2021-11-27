@@ -60,7 +60,7 @@ static void test_mutex_work(struct work_struct *work)
 
 static int __test_mutex(unsigned int flags)
 {
-#define TIMEOUT (HZ / 16)
+#define TIMEOUT (1000 / 16)
 	struct test_mutex mtx;
 	struct ww_acquire_ctx ctx;
 	int ret;
@@ -576,7 +576,7 @@ static int stress(int nlocks, int nthreads, unsigned int flags)
 		INIT_WORK(&stress->work, fn);
 		stress->locks = locks;
 		stress->nlocks = nlocks;
-		stress->timeout = jiffies + 2*HZ;
+		stress->timeout = jiffies + 2*msecs_to_jiffies(1000);
 
 		queue_work(wq, &stress->work);
 		nthreads--;

@@ -108,7 +108,7 @@ static int xfer_read(struct i2c_adapter *adap, struct i2c_msg *pmsg)
 
 	while (i2c_dev->status != I2C_TRANSACTION_DONE)
 		wait_for_completion_interruptible_timeout(&i2c_dev->complete,
-								10 * HZ);
+								10 * msecs_to_jiffies(1000));
 
 	return 0;
 }

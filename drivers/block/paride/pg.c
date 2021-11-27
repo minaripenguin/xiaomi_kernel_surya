@@ -180,8 +180,8 @@ module_param_array(drive3, int, NULL, 0);
 
 #define PG_SPIN_DEL     50	/* spin delay in micro-seconds  */
 #define PG_SPIN         200
-#define PG_TMO		HZ
-#define PG_RESET_TMO	10*HZ
+#define PG_TMO		msecs_to_jiffies(1000)
+#define PG_RESET_TMO	10*msecs_to_jiffies(1000)
 
 #define STAT_ERR        0x01
 #define STAT_INDEX      0x02
@@ -395,7 +395,7 @@ static int pg_reset(struct pg *dev)
 	write_reg(dev, 6, DRIVE(dev));
 	write_reg(dev, 7, 8);
 
-	pg_sleep(20 * HZ / 1000);
+	pg_sleep(20 * msecs_to_jiffies(1000) / 1000);
 
 	k = 0;
 	while ((k++ < PG_RESET_TMO) && (status_reg(dev) & STAT_BUSY))
@@ -606,7 +606,7 @@ static ssize_t pg_write(struct file *filp, const char __user *buf, size_t count,
 		return -EINVAL;
 
 	dev->start = jiffies;
-	dev->timeout = hdr.timeout * HZ + HZ / 2 + jiffies;
+	dev->timeout = hdr.timeout * msecs_to_jiffies(1000) + msecs_to_jiffies(1000) / 2 + jiffies;
 
 	if (pg_command(dev, hdr.packet, hdr.dlen, jiffies + PG_TMO)) {
 		if (dev->status & 0x10)
@@ -651,7 +651,7 @@ static ssize_t pg_read(struct file *filp, char __user *buf, size_t count, loff_t
 			copy = count - hs;
 	}
 
-	hdr.duration = (jiffies - dev->start + HZ / 2) / HZ;
+	hdr.duration = (jiffies - dev->start + msecs_to_jiffies(1000) / 2) / msecs_to_jiffies(1000);
 	hdr.scsi = dev->status & 0x0f;
 
 	if (copy_to_user(buf, &hdr, hs))

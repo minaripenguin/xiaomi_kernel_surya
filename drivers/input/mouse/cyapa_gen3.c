@@ -813,7 +813,7 @@ static ssize_t cyapa_gen3_do_calibrate(struct device *dev,
 	}
 
 	/* max recalibration timeout 2s. */
-	timeout = jiffies + 2 * HZ;
+	timeout = jiffies + 2 * msecs_to_jiffies(1000);
 	do {
 		/*
 		 * For this recalibration, the max time will not exceed 2s.

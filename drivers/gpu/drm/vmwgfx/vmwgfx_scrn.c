@@ -195,7 +195,7 @@ static int vmw_sou_fifo_destroy(struct vmw_private *dev_priv,
 	vmw_fifo_commit(dev_priv, fifo_size);
 
 	/* Force sync */
-	ret = vmw_fallback_wait(dev_priv, false, true, 0, false, 3*HZ);
+	ret = vmw_fallback_wait(dev_priv, false, true, 0, false, 3*msecs_to_jiffies(1000));
 	if (unlikely(ret != 0))
 		DRM_ERROR("Failed to sync with HW");
 	else

@@ -575,7 +575,7 @@ static void bad_page(struct page *page, const char *reason,
 		nr_shown = 0;
 	}
 	if (nr_shown++ == 0)
-		resume = jiffies + 60 * HZ;
+		resume = jiffies + 60 * msecs_to_jiffies(1000);
 
 	pr_alert("BUG: Bad page state in process %s  pfn:%05lx\n",
 		current->comm, page_to_pfn(page));
@@ -3369,7 +3369,7 @@ static inline bool should_suppress_show_mem(void)
 static void warn_alloc_show_mem(gfp_t gfp_mask, nodemask_t *nodemask)
 {
 	unsigned int filter = SHOW_MEM_FILTER_NODES;
-	static DEFINE_RATELIMIT_STATE(show_mem_rs, HZ, 1);
+	static DEFINE_RATELIMIT_STATE(show_mem_rs, 1000, 1);
 
 	if (should_suppress_show_mem() || !__ratelimit(&show_mem_rs))
 		return;

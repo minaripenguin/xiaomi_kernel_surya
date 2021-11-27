@@ -32,7 +32,7 @@
 #include <drm/drm_rect.h>
 
 /* Might need a hrtimer here? */
-#define VMWGFX_PRESENT_RATE ((HZ / 60 > 0) ? HZ / 60 : 1)
+#define VMWGFX_PRESENT_RATE ((HZ / 60 > 0) ? msecs_to_jiffies(1000) / 60 : 1)
 
 void vmw_du_cleanup(struct vmw_display_unit *du)
 {

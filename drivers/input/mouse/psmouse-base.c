@@ -343,7 +343,7 @@ static irqreturn_t psmouse_interrupt(struct serio *serio,
 		goto out;
 
 	if (psmouse->state == PSMOUSE_ACTIVATED &&
-	    psmouse->pktcnt && time_after(jiffies, psmouse->last + HZ/2)) {
+	    psmouse->pktcnt && time_after(jiffies, psmouse->last + msecs_to_jiffies(1000)/2)) {
 		psmouse_info(psmouse, "%s at %s lost synchronization, throwing %d bytes away.\n",
 			     psmouse->name, psmouse->phys, psmouse->pktcnt);
 		psmouse->badbyte = psmouse->packet[0];
@@ -383,7 +383,7 @@ static irqreturn_t psmouse_interrupt(struct serio *serio,
 	 */
 	if (psmouse->state == PSMOUSE_ACTIVATED &&
 	    psmouse->pktcnt == 1 && psmouse->resync_time &&
-	    time_after(jiffies, psmouse->last + psmouse->resync_time * HZ)) {
+	    time_after(jiffies, psmouse->last + psmouse->resync_time * msecs_to_jiffies(1000))) {
 		psmouse->badbyte = psmouse->packet[0];
 		__psmouse_set_state(psmouse, PSMOUSE_RESYNCING);
 		psmouse_queue_work(psmouse, &psmouse->resync_work, 0);

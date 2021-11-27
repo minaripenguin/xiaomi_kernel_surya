@@ -328,7 +328,7 @@ static void motor_on_callback(unsigned long nr)
 	if (!(ciaa.pra & DSKRDY) || --on_attempts == 0) {
 		complete_all(&motor_on_completion);
 	} else {
-		motor_on_timer.expires = jiffies + HZ/10;
+		motor_on_timer.expires = jiffies + msecs_to_jiffies(1000)/10;
 		add_timer(&motor_on_timer);
 	}
 }
@@ -345,7 +345,7 @@ static int fd_motor_on(int nr)
 
 		reinit_completion(&motor_on_completion);
 		motor_on_timer.data = nr;
-		mod_timer(&motor_on_timer, jiffies + HZ/2);
+		mod_timer(&motor_on_timer, jiffies + msecs_to_jiffies(1000)/2);
 
 		on_attempts = 10;
 		wait_for_completion(&motor_on_completion);
@@ -395,7 +395,7 @@ static void floppy_off (unsigned int nr)
 	drive = nr & 3;
 	/* called this way it is always from interrupt */
 	motor_off_timer[drive].data = nr | 0x80000000;
-	mod_timer(motor_off_timer + drive, jiffies + 3*HZ);
+	mod_timer(motor_off_timer + drive, jiffies + 3*msecs_to_jiffies(1000));
 }
 
 static int fd_calibrate(int drive)

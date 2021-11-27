@@ -151,7 +151,7 @@ struct dirty_throttle_control {
  * arbitrarily chosen number. The longer the period, the slower fractions will
  * reflect changes in current writeout rate.
  */
-#define VM_COMPLETIONS_PERIOD_LEN (3*HZ)
+#define VM_COMPLETIONS_PERIOD_LEN (3*msecs_to_jiffies(1000))
 
 #ifdef CONFIG_CGROUP_WRITEBACK
 
@@ -1085,13 +1085,13 @@ static void wb_update_write_bandwidth(struct bdi_writeback *wb,
 				      unsigned long elapsed,
 				      unsigned long written)
 {
-	const unsigned long period = roundup_pow_of_two(3 * HZ);
+	const unsigned long period = roundup_pow_of_two(3 * msecs_to_jiffies(1000));
 	unsigned long avg = wb->avg_write_bandwidth;
 	unsigned long old = wb->write_bandwidth;
 	u64 bw;
 
 	/*
-	 * bw = written * HZ / elapsed
+	 * bw = written * msecs_to_jiffies(1000) / elapsed
 	 *
 	 *                   bw * elapsed + write_bandwidth * (period - elapsed)
 	 * write_bandwidth = ---------------------------------------------------
@@ -1101,7 +1101,7 @@ static void wb_update_write_bandwidth(struct bdi_writeback *wb,
 	 * Avoid underflowing @bw calculation.
 	 */
 	bw = written - min(written, wb->written_stamp);
-	bw *= HZ;
+	bw *= msecs_to_jiffies(1000);
 	if (unlikely(elapsed > period)) {
 		do_div(bw, elapsed);
 		avg = bw;
@@ -1207,7 +1207,7 @@ static void wb_update_dirty_ratelimit(struct dirty_throttle_control *dtc,
 	 * The dirty rate will match the writeout rate in long term, except
 	 * when dirty pages are truncated by userspace or re-dirtied by FS.
 	 */
-	dirty_rate = (dirtied - wb->dirtied_stamp) * HZ / elapsed;
+	dirty_rate = (dirtied - wb->dirtied_stamp) * msecs_to_jiffies(1000) / elapsed;
 
 	/*
 	 * task_ratelimit reflects each dd's dirty rate for the past 200ms.
@@ -1369,7 +1369,7 @@ static void __wb_update_bandwidth(struct dirty_throttle_control *gdtc,
 	 * Skip quiet periods when disk bandwidth is under-utilized.
 	 * (at least 1s idle time between two flusher runs)
 	 */
-	if (elapsed > HZ && time_before(wb->bw_time_stamp, start_time))
+	if (elapsed > msecs_to_jiffies(1000) && time_before(wb->bw_time_stamp, start_time))
 		goto snapshot;
 
 	if (update_ratelimit) {
@@ -1430,7 +1430,7 @@ static unsigned long wb_max_pause(struct bdi_writeback *wb,
 	 *
 	 * 8 serves as the safety ratio.
 	 */
-	t = wb_dirty / (1 + bw / roundup_pow_of_two(1 + HZ / 8));
+	t = wb_dirty / (1 + bw / roundup_pow_of_two(1 + msecs_to_jiffies(1000) / 8));
 	t++;
 
 	return min_t(unsigned long, t, MAX_PAUSE);
@@ -1449,7 +1449,7 @@ static long wb_min_pause(struct bdi_writeback *wb,
 	int pages;	/* target nr_dirtied_pause */
 
 	/* target for 10ms pause on 1-dd case */
-	t = max(1, HZ / 100);
+	t = max(1, 10);
 
 	/*
 	 * Scale up pause time for concurrent dirtiers in order to reduce CPU
@@ -1458,7 +1458,7 @@ static long wb_min_pause(struct bdi_writeback *wb,
 	 * (N * 10ms) on 2^N concurrent tasks.
 	 */
 	if (hi > lo)
-		t += (hi - lo) * (10 * HZ) / 1024;
+		t += (hi - lo) * (10 * msecs_to_jiffies(1000)) / 1024;
 
 	/*
 	 * This is a bit convoluted. We try to base the next nr_dirtied_pause
@@ -1494,11 +1494,11 @@ static long wb_min_pause(struct bdi_writeback *wb,
 		pages = dirty_ratelimit * t / roundup_pow_of_two(HZ);
 		if (pages > DIRTY_POLL_THRESH) {
 			pages = DIRTY_POLL_THRESH;
-			t = HZ * DIRTY_POLL_THRESH / dirty_ratelimit;
+			t = msecs_to_jiffies(1000) * DIRTY_POLL_THRESH / dirty_ratelimit;
 		}
 	}
 
-	pause = HZ * pages / (task_ratelimit + 1);
+	pause = msecs_to_jiffies(1000) * pages / (task_ratelimit + 1);
 	if (pause > max_pause) {
 		t = max_pause;
 		pages = task_ratelimit * t / roundup_pow_of_two(HZ);
@@ -1724,7 +1724,7 @@ static void balance_dirty_pages(struct address_space *mapping,
 			pause = max_pause;
 			goto pause;
 		}
-		period = HZ * pages_dirtied / task_ratelimit;
+		period = msecs_to_jiffies(1000) * pages_dirtied / task_ratelimit;
 		pause = period;
 		if (current->dirty_paused_when)
 			pause -= now - current->dirty_paused_when;
@@ -2348,7 +2348,7 @@ int do_writepages(struct address_space *mapping, struct writeback_control *wbc)
 		if ((ret != -ENOMEM) || (wbc->sync_mode != WB_SYNC_ALL))
 			break;
 		cond_resched();
-		congestion_wait(BLK_RW_ASYNC, HZ/50);
+		congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(1000)/50);
 	}
 	return ret;
 }

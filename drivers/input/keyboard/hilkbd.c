@@ -230,7 +230,7 @@ static int hil_keyb_init(void)
 	hil_dev.valid = 0;	/* clear any pending data */
 	hil_do(HIL_READKBDSADR, NULL, 0);
 
-	wait_event_interruptible_timeout(hil_wait, hil_dev.valid, 3 * HZ);
+	wait_event_interruptible_timeout(hil_wait, hil_dev.valid, 3 * msecs_to_jiffies(1000));
 	if (!hil_dev.valid)
 		printk(KERN_WARNING "HIL: timed out, assuming no keyboard present\n");
 

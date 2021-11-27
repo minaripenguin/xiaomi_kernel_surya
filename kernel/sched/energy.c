@@ -208,7 +208,7 @@ static int sched_energy_probe(struct platform_device *pdev)
 			goto exit;
 		}
 
-		/* Convert HZ to KHZ */
+		/* Convert msecs_to_jiffies(1000) to KHZ */
 		max_frequencies[cpu] /= 1000;
 	}
 

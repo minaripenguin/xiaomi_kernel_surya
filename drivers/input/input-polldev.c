@@ -27,7 +27,7 @@ static void input_polldev_queue_work(struct input_polled_dev *dev)
 	unsigned long delay;
 
 	delay = msecs_to_jiffies(dev->poll_interval);
-	if (delay >= HZ)
+	if (delay >= msecs_to_jiffies(1000))
 		delay = round_jiffies_relative(delay);
 
 	queue_delayed_work(system_freezable_wq, &dev->work, delay);

@@ -160,7 +160,7 @@ static void locomokbd_scankeyboard(struct locomokbd *locomokbd)
 			 * if it was pressed for more than a second. */
 			if (unlikely(key == KEY_ESC)) {
 				if (!time_after(jiffies,
-					locomokbd->suspend_jiffies + HZ))
+					locomokbd->suspend_jiffies + msecs_to_jiffies(1000)))
 					continue;
 				if (locomokbd->count_cancel++
 					!= (HZ/SCAN_INTERVAL + 1))

@@ -512,7 +512,7 @@ tsince_hr(struct frame *f)
 	/* For relatively long periods, use jiffies to avoid
 	 * discrepancies caused by updates to the system time.
 	 *
-	 * On system with HZ of 1000, 32-bits is over 49 days
+	 * On system with msecs_to_jiffies(1000) of 1000, 32-bits is over 49 days
 	 * worth of jiffies, or over 71 minutes worth of usecs.
 	 *
 	 * Jiffies overflow is handled by subtraction of unsigned ints:
@@ -522,7 +522,7 @@ tsince_hr(struct frame *f)
 	 */
 	if (n > USEC_PER_SEC / 4) {
 		n = ((u32) jiffies) - f->sent_jiffs;
-		n *= USEC_PER_SEC / HZ;
+		n *= USEC_PER_SEC / msecs_to_jiffies(1000);
 	}
 
 	return n;

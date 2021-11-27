@@ -659,7 +659,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 			dump_tasks(NULL, NULL);
 		}
 
-		lowmem_deathpending_timeout = jiffies + HZ;
+		lowmem_deathpending_timeout = jiffies + msecs_to_jiffies(1000);
 		rem += selected_tasksize;
 		rcu_read_unlock();
 		/* give the system time to free up the memory */
@@ -672,7 +672,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		rcu_read_unlock();
 		if (other_free < lowmem_minfree[0] &&
 		    other_file < lowmem_minfree[0])
-			atomic64_set(&lmk_feed, jiffies + HZ);
+			atomic64_set(&lmk_feed, jiffies + msecs_to_jiffies(1000));
 		else
 			atomic64_set(&lmk_feed, 0);
 

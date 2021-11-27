@@ -196,7 +196,7 @@ static int sunkbd_initialize(struct sunkbd *sunkbd)
 {
 	sunkbd->reset = -2;
 	serio_write(sunkbd->serio, SUNKBD_CMD_RESET);
-	wait_event_interruptible_timeout(sunkbd->wait, sunkbd->reset >= 0, HZ);
+	wait_event_interruptible_timeout(sunkbd->wait, sunkbd->reset >= 0, msecs_to_jiffies(1000));
 	if (sunkbd->reset < 0)
 		return -1;
 
@@ -206,7 +206,7 @@ static int sunkbd_initialize(struct sunkbd *sunkbd)
 		sunkbd->layout = -2;
 		serio_write(sunkbd->serio, SUNKBD_CMD_LAYOUT);
 		wait_event_interruptible_timeout(sunkbd->wait,
-						 sunkbd->layout >= 0, HZ / 4);
+						 sunkbd->layout >= 0, msecs_to_jiffies(1000) / 4);
 		if (sunkbd->layout < 0)
 			return -1;
 		if (sunkbd->layout & SUNKBD_LAYOUT_5_MASK)
@@ -252,7 +252,7 @@ static void sunkbd_reinit(struct work_struct *work)
 	 */
 	wait_event_interruptible_timeout(sunkbd->wait,
 					 sunkbd->reset >= 0 || !sunkbd->enabled,
-					 HZ);
+					 msecs_to_jiffies(1000));
 
 	if (sunkbd->reset >= 0 && sunkbd->enabled)
 		sunkbd_set_leds_beeps(sunkbd);

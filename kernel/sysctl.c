@@ -3106,7 +3106,7 @@ int proc_doulongvec_ms_jiffies_minmax(struct ctl_table *table, int write,
 				      size_t *lenp, loff_t *ppos)
 {
     return do_proc_doulongvec_minmax(table, write, buffer,
-				     lenp, ppos, HZ, 1000l);
+				     lenp, ppos, msecs_to_jiffies(1000), 1000l);
 }
 
 
@@ -3115,9 +3115,9 @@ static int do_proc_dointvec_jiffies_conv(bool *negp, unsigned long *lvalp,
 					 int write, void *data)
 {
 	if (write) {
-		if (*lvalp > INT_MAX / HZ)
+		if (*lvalp > INT_MAX / msecs_to_jiffies(1000))
 			return 1;
-		*valp = *negp ? -(*lvalp*HZ) : (*lvalp*HZ);
+		*valp = *negp ? -(*lvalp*msecs_to_jiffies(1000)) : (*lvalp*msecs_to_jiffies(1000));
 	} else {
 		int val = *valp;
 		unsigned long lval;
@@ -3128,7 +3128,7 @@ static int do_proc_dointvec_jiffies_conv(bool *negp, unsigned long *lvalp,
 			*negp = false;
 			lval = (unsigned long)val;
 		}
-		*lvalp = lval / HZ;
+		*lvalp = lval / msecs_to_jiffies(1000);
 	}
 	return 0;
 }
@@ -3138,7 +3138,7 @@ static int do_proc_dointvec_userhz_jiffies_conv(bool *negp, unsigned long *lvalp
 						int write, void *data)
 {
 	if (write) {
-		if (USER_HZ < HZ && *lvalp > (LONG_MAX / HZ) * USER_HZ)
+		if (USER_HZ < msecs_to_jiffies(1000) && *lvalp > (LONG_MAX / msecs_to_jiffies(1000)) * USER_HZ)
 			return 1;
 		*valp = clock_t_to_jiffies(*negp ? -*lvalp : *lvalp);
 	} else {

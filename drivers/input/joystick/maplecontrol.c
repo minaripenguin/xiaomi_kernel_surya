@@ -63,7 +63,7 @@ static int dc_pad_open(struct input_dev *dev)
 {
 	struct dc_pad *pad = dev_get_platdata(&dev->dev);
 
-	maple_getcond_callback(pad->mdev, dc_pad_callback, HZ/20,
+	maple_getcond_callback(pad->mdev, dc_pad_callback, msecs_to_jiffies(1000)/20,
 		MAPLE_FUNC_CONTROLLER);
 
 	return 0;

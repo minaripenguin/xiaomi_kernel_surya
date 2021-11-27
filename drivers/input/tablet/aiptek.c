@@ -803,7 +803,7 @@ static void aiptek_irq(struct urb *urb)
 	if (aiptek->previousJitterable != jitterable &&
 	    aiptek->curSetting.jitterDelay != 0 && aiptek->inDelay != 1) {
 		aiptek->endDelay = jiffies +
-		    ((aiptek->curSetting.jitterDelay * HZ) / 1000);
+		    ((aiptek->curSetting.jitterDelay * msecs_to_jiffies(1000)) / 1000);
 		aiptek->inDelay = 1;
 	}
 	aiptek->previousJitterable = jitterable;

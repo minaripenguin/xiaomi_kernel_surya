@@ -629,7 +629,7 @@ void sde_core_perf_crtc_update(struct drm_crtc *crtc,
 		}
 
 		kms->perf.core_clk_rate = clk_rate;
-		SDE_DEBUG("update clk rate = %lld HZ\n", clk_rate);
+		SDE_DEBUG("update clk rate = %lld msecs_to_jiffies(1000)\n", clk_rate);
 	}
 	mutex_unlock(&sde_core_perf_lock);
 

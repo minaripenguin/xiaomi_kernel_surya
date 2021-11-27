@@ -52,7 +52,7 @@ static int pcspkr_event(struct input_dev *dev, unsigned int type,
 	if (count) {
 		/* set command for counter 2, 2 byte write */
 		outb_p(0xB6, 0x43);
-		/* select desired HZ */
+		/* select desired msecs_to_jiffies(1000) */
 		outb_p(count & 0xff, 0x42);
 		outb((count >> 8) & 0xff, 0x42);
 		/* enable counter 2 */

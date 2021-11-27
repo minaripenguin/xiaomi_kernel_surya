@@ -488,7 +488,7 @@ EXPORT_SYMBOL_GPL(do_trace_rcu_torture_read);
 #ifdef CONFIG_RCU_STALL_COMMON
 
 #ifdef CONFIG_PROVE_RCU
-#define RCU_STALL_DELAY_DELTA	       (5 * HZ)
+#define RCU_STALL_DELAY_DELTA	       (5 * 1000)
 #else
 #define RCU_STALL_DELAY_DELTA	       0
 #endif
@@ -514,7 +514,7 @@ int rcu_jiffies_till_stall_check(void)
 		WRITE_ONCE(rcu_cpu_stall_timeout, 300);
 		till_stall_check = 300;
 	}
-	return till_stall_check * HZ + RCU_STALL_DELAY_DELTA;
+	return till_stall_check * msecs_to_jiffies(1000) + RCU_STALL_DELAY_DELTA;
 }
 
 void rcu_sysrq_start(void)
@@ -799,7 +799,7 @@ static int __noreturn rcu_tasks_kthread(void *arg)
 		 */
 		lastreport = jiffies;
 
-		/* Start off with HZ/10 wait and slowly back off to 1 HZ wait*/
+		/* Start off with msecs_to_jiffies(1000)/10 wait and slowly back off to 1 msecs_to_jiffies(1000) wait*/
 		fract = 10;
 
 		for (;;) {

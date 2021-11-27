@@ -164,7 +164,7 @@ static const int bfq_default_max_budget = 16 * 1024;
 static const int bfq_async_charge_factor = 10;
 
 /* Default timeout values, in jiffies, approximating CFQ defaults. */
-const int bfq_timeout = HZ / 8;
+const int bfq_timeout = msecs_to_jiffies(1000) / 8;
 
 static struct kmem_cache *bfq_pool;
 
@@ -2907,9 +2907,9 @@ static bool bfq_bfqq_is_slow(struct bfq_data *bfqd, struct bfq_queue *bfqq,
  * Unfortunately, the last filter may easily generate false positives if
  * only bfqd->bfq_slice_idle is used as a reference time interval and one
  * or both the following cases occur:
- * 1) HZ is so low that the duration of a jiffy is comparable to or higher
+ * 1) msecs_to_jiffies(1000) is so low that the duration of a jiffy is comparable to or higher
  *    than bfqd->bfq_slice_idle. This happens, e.g., on slow devices with
- *    HZ=100.
+ *    msecs_to_jiffies(1000)=100.
  * 2) jiffies, instead of increasing at a constant rate, may stop increasing
  *    for a while, then suddenly 'jump' by several units to recover the lost
  *    increments. This seems to happen, e.g., inside virtual machines.
@@ -2923,7 +2923,7 @@ static unsigned long bfq_bfqq_softrt_next_start(struct bfq_data *bfqd,
 						struct bfq_queue *bfqq)
 {
 	return max(bfqq->last_idle_bklogged +
-		   HZ * bfqq->service_from_backlogged /
+		   msecs_to_jiffies(1000) * bfqq->service_from_backlogged /
 		   bfqd->bfq_wr_max_softrt_rate,
 		   jiffies + nsecs_to_jiffies(bfqq->bfqd->bfq_slice_idle) + 4);
 }

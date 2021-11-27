@@ -1273,7 +1273,7 @@ void drm_atomic_helper_wait_for_flip_done(struct drm_device *dev,
 		if (!commit)
 			continue;
 
-		ret = wait_for_completion_timeout(&commit->flip_done, 10 * HZ);
+		ret = wait_for_completion_timeout(&commit->flip_done, 10 * msecs_to_jiffies(1000));
 		if (ret == 0)
 			DRM_ERROR("[CRTC:%d:%s] flip_done timed out\n",
 				  crtc->base.id, crtc->name);
@@ -1659,7 +1659,7 @@ static int stall_checks(struct drm_crtc *crtc, bool nonblock)
 	 * stalling on 2nd previous commit means triple-buffer won't ever stall.
 	 */
 	ret = wait_for_completion_interruptible_timeout(&stall_commit->cleanup_done,
-							10*HZ);
+							10*msecs_to_jiffies(1000));
 	if (ret == 0)
 		DRM_ERROR("[CRTC:%d:%s] cleanup_done timed out\n",
 			  crtc->base.id, crtc->name);
@@ -1826,7 +1826,7 @@ void drm_atomic_helper_wait_for_dependencies(struct drm_atomic_state *old_state)
 			continue;
 
 		ret = wait_for_completion_timeout(&commit->hw_done,
-						  10*HZ);
+						  10*msecs_to_jiffies(1000));
 		if (ret == 0)
 			DRM_ERROR("[CRTC:%d:%s] hw_done timed out\n",
 				  crtc->base.id, crtc->name);
@@ -1834,7 +1834,7 @@ void drm_atomic_helper_wait_for_dependencies(struct drm_atomic_state *old_state)
 		/* Currently no support for overwriting flips, hence
 		 * stall for previous one to execute completely. */
 		ret = wait_for_completion_timeout(&commit->flip_done,
-						  10*HZ);
+						  10*msecs_to_jiffies(1000));
 		if (ret == 0)
 			DRM_ERROR("[CRTC:%d:%s] flip_done timed out\n",
 				  crtc->base.id, crtc->name);
@@ -1915,7 +1915,7 @@ void drm_atomic_helper_commit_cleanup_done(struct drm_atomic_state *old_state)
 		 * before releasing our reference, since the vblank work does
 		 * not hold a reference of its own. */
 		ret = wait_for_completion_timeout(&commit->flip_done,
-						  10*HZ);
+						  10*msecs_to_jiffies(1000));
 		if (ret == 0)
 			DRM_ERROR("[CRTC:%d:%s] flip_done timed out\n",
 				  crtc->base.id, crtc->name);

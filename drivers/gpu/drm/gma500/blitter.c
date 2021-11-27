@@ -22,7 +22,7 @@
 /* Wait for the blitter to be completely idle */
 int gma_blt_wait_idle(struct drm_psb_private *dev_priv)
 {
-	unsigned long stop = jiffies + HZ;
+	unsigned long stop = jiffies + msecs_to_jiffies(1000);
 	int busy = 1;
 
 	/* NOP for Cedarview */

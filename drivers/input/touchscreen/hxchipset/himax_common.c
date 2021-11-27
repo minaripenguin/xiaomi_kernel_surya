@@ -23,7 +23,7 @@
 #endif
 
 #define SUPPORT_FINGER_DATA_CHECKSUM 0x0F
-#define TS_WAKE_LOCK_TIMEOUT (2 * HZ)
+#define TS_WAKE_LOCK_TIMEOUT (2 * msecs_to_jiffies(1000))
 #define FRAME_COUNT 5
 #define COMMON_BUF_SZ 80
 

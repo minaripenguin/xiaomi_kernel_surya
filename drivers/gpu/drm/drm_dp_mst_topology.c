@@ -804,7 +804,7 @@ static int drm_dp_mst_wait_tx_reply(struct drm_dp_mst_branch *mstb,
 
 	ret = wait_event_timeout(mgr->tx_waitq,
 				 check_txmsg_state(mgr, txmsg),
-				 (4 * HZ));
+				 (4 * msecs_to_jiffies(1000)));
 	mutex_lock(&mstb->mgr->qlock);
 	if (ret > 0) {
 		if (txmsg->state == DRM_DP_SIDEBAND_TX_TIMEOUT) {

@@ -263,7 +263,7 @@ int iforce_get_id_packet(struct iforce *iforce, char *packet)
 		}
 
 		wait_event_interruptible_timeout(iforce->wait,
-			iforce->ctrl->status != -EINPROGRESS, HZ);
+			iforce->ctrl->status != -EINPROGRESS, msecs_to_jiffies(1000));
 
 		if (iforce->ctrl->status) {
 			dev_dbg(&iforce->intf->dev,
@@ -285,7 +285,7 @@ int iforce_get_id_packet(struct iforce *iforce, char *packet)
 		iforce_send_packet(iforce, FF_CMD_QUERY, packet);
 
 		wait_event_interruptible_timeout(iforce->wait,
-			!iforce->expect_packet, HZ);
+			!iforce->expect_packet, msecs_to_jiffies(1000));
 
 		if (iforce->expect_packet) {
 			iforce->expect_packet = 0;

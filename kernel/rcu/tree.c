@@ -534,7 +534,7 @@ module_param(rcu_kick_kthreads, bool, 0644);
  * How long the grace period must be before we start recruiting
  * quiescent-state help from rcu_note_context_switch().
  */
-static ulong jiffies_till_sched_qs = HZ / 10;
+static ulong jiffies_till_sched_qs = 100;
 module_param(jiffies_till_sched_qs, ulong, 0444);
 
 static bool rcu_start_gp_advanced(struct rcu_state *rsp, struct rcu_node *rnp,
@@ -1347,7 +1347,7 @@ static void rcu_check_gp_kthread_starvation(struct rcu_state *rsp)
 
 	j = jiffies;
 	gpa = READ_ONCE(rsp->gp_activity);
-	if (j - gpa > 2 * HZ) {
+	if (j - gpa > 2 * msecs_to_jiffies(1000)) {
 		pr_err("%s kthread starved for %ld jiffies! g%lu c%lu f%#x %s(%d) ->state=%#lx ->cpu=%d\n",
 		       rsp->name, j - gpa,
 		       rsp->gpnum, rsp->completed,
@@ -1400,7 +1400,7 @@ static void rcu_stall_kick_kthreads(struct rcu_state *rsp)
 		WARN_ONCE(1, "Kicking %s grace-period kthread\n", rsp->name);
 		rcu_ftrace_dump(DUMP_ALL);
 		wake_up_process(rsp->gp_kthread);
-		WRITE_ONCE(rsp->jiffies_kick_kthreads, j + HZ);
+		WRITE_ONCE(rsp->jiffies_kick_kthreads, j + msecs_to_jiffies(1000));
 	}
 }
 
@@ -2222,9 +2222,9 @@ static int __noreturn rcu_gp_kthread(void *arg)
 		/* Handle quiescent-state forcing. */
 		first_gp_fqs = true;
 		j = jiffies_till_first_fqs;
-		if (j > HZ) {
-			j = HZ;
-			jiffies_till_first_fqs = HZ;
+		if (j > msecs_to_jiffies(1000)) {
+			j = msecs_to_jiffies(1000);
+			jiffies_till_first_fqs = msecs_to_jiffies(1000);
 		}
 		ret = 0;
 		for (;;) {
@@ -2260,9 +2260,9 @@ static int __noreturn rcu_gp_kthread(void *arg)
 				WRITE_ONCE(rsp->gp_activity, jiffies);
 				ret = 0; /* Force full wait till next FQS. */
 				j = jiffies_till_next_fqs;
-				if (j > HZ) {
-					j = HZ;
-					jiffies_till_next_fqs = HZ;
+				if (j > msecs_to_jiffies(1000)) {
+					j = msecs_to_jiffies(1000);
+					jiffies_till_next_fqs = msecs_to_jiffies(1000);
 				} else if (j < 1) {
 					j = 1;
 					jiffies_till_next_fqs = 1;
@@ -4092,7 +4092,7 @@ static void __init rcu_init_geometry(void)
 	 * Initialize any unspecified boot parameters.
 	 * The default values of jiffies_till_first_fqs and
 	 * jiffies_till_next_fqs are set to the RCU_JIFFIES_TILL_FORCE_QS
-	 * value, which is a function of HZ, then adding one for each
+	 * value, which is a function of msecs_to_jiffies(1000), then adding one for each
 	 * RCU_JIFFIES_FQS_DIV CPUs that might be on the system.
 	 */
 	d = RCU_JIFFIES_TILL_FORCE_QS + nr_cpu_ids / RCU_JIFFIES_FQS_DIV;

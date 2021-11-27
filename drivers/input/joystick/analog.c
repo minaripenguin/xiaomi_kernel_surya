@@ -144,7 +144,7 @@ struct analog_port {
 #include <linux/i8253.h>
 
 #define GET_TIME(x)	do { if (boot_cpu_has(X86_FEATURE_TSC)) x = (unsigned int)rdtsc(); else x = get_time_pit(); } while (0)
-#define DELTA(x,y)	(boot_cpu_has(X86_FEATURE_TSC) ? ((y) - (x)) : ((x) - (y) + ((x) < (y) ? PIT_TICK_RATE / HZ : 0)))
+#define DELTA(x,y)	(boot_cpu_has(X86_FEATURE_TSC) ? ((y) - (x)) : ((x) - (y) + ((x) < (y) ? PIT_TICK_RATE / msecs_to_jiffies(1000) : 0)))
 #define TIME_NAME	(boot_cpu_has(X86_FEATURE_TSC)?"TSC":"PIT")
 static unsigned int get_time_pit(void)
 {

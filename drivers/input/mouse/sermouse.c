@@ -208,7 +208,7 @@ static irqreturn_t sermouse_interrupt(struct serio *serio,
 {
 	struct sermouse *sermouse = serio_get_drvdata(serio);
 
-	if (time_after(jiffies, sermouse->last + HZ/10))
+	if (time_after(jiffies, sermouse->last + msecs_to_jiffies(1000)/10))
 		sermouse->count = 0;
 
 	sermouse->last = jiffies;

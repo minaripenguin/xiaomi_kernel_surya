@@ -44,7 +44,7 @@
  * compared to the CPU.  This should not be too horrible most of the time,
  * but if used with HIL devices that support the multibyte transfer command,
  * keeping outbound throughput flowing at the 6500KBps that the HIL is
- * capable of is more than can be done at HZ=100.
+ * capable of is more than can be done at msecs_to_jiffies(1000)=100.
  *
  * Busy polling for IBF clear wastes CPU cycles and bus cycles.  hp_sdc.ibf
  * is set to 0 when the IBF flag in the status register has cleared.  ISR
@@ -798,7 +798,7 @@ static void hp_sdc_kicker(unsigned long data)
 {
 	tasklet_schedule(&hp_sdc.task);
 	/* Re-insert the periodic task. */
-	mod_timer(&hp_sdc.kicker, jiffies + HZ);
+	mod_timer(&hp_sdc.kicker, jiffies + msecs_to_jiffies(1000));
 }
 
 /************************** Module Initialization ***************************/
@@ -910,7 +910,7 @@ static int __init hp_sdc_init(void)
 
 	/* Create the keepalive task */
 	init_timer(&hp_sdc.kicker);
-	hp_sdc.kicker.expires = jiffies + HZ;
+	hp_sdc.kicker.expires = jiffies + msecs_to_jiffies(1000);
 	hp_sdc.kicker.function = &hp_sdc_kicker;
 	add_timer(&hp_sdc.kicker);
 

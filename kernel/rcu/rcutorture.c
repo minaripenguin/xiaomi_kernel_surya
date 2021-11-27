@@ -59,7 +59,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Paul E. McKenney <paulmck@us.ibm.com> and Josh Triplett <josh@joshtriplett.org>");
 
 
-torture_param(int, cbflood_inter_holdoff, HZ,
+torture_param(int, cbflood_inter_holdoff, msecs_to_jiffies(1000),
 	      "Holdoff between floods (jiffies)");
 torture_param(int, cbflood_intra_holdoff, 1,
 	      "Holdoff between bursts (jiffies)");
@@ -517,7 +517,7 @@ static int srcu_torture_read_lock(void) __acquires(srcu_ctlp)
 static void srcu_read_delay(struct torture_random_state *rrsp)
 {
 	long delay;
-	const long uspertick = 1000000 / HZ;
+	const long uspertick = 1000000 / msecs_to_jiffies(1000);
 	const long longdelay = 10;
 
 	/* We want there to be long-running readers, but not all the time. */
@@ -756,7 +756,7 @@ static int rcu_torture_boost(void *arg)
 		}
 
 		/* Do one boost-test interval. */
-		endtime = oldstarttime + test_boost_duration * HZ;
+		endtime = oldstarttime + test_boost_duration * msecs_to_jiffies(1000);
 		call_rcu_time = jiffies;
 		while (ULONG_CMP_LT(jiffies, endtime)) {
 			/* If we don't have a callback in flight, post one. */
@@ -765,7 +765,7 @@ static int rcu_torture_boost(void *arg)
 				smp_store_release(&rbi.inflight, 1);
 				call_rcu(&rbi.rcu, rcu_torture_boost_cb);
 				if (jiffies - call_rcu_time >
-					 test_boost_duration * HZ - HZ / 2) {
+					 test_boost_duration * msecs_to_jiffies(1000) - msecs_to_jiffies(1000) / 2) {
 					VERBOSE_TOROUT_STRING("rcu_torture_boost boosting failed");
 					n_rcu_torture_boost_failure++;
 				}
@@ -787,7 +787,7 @@ static int rcu_torture_boost(void *arg)
 		       !kthread_should_stop()) {
 			if (mutex_trylock(&boost_mutex)) {
 				boost_starttime = jiffies +
-						  test_boost_interval * HZ;
+						  test_boost_interval * msecs_to_jiffies(1000);
 				n_rcu_torture_boosts++;
 				mutex_unlock(&boost_mutex);
 				break;
@@ -874,7 +874,7 @@ rcu_torture_fqs(void *arg)
 
 	VERBOSE_TOROUT_STRING("rcu_torture_fqs task started");
 	do {
-		fqs_resume_time = jiffies + fqs_stutter * HZ;
+		fqs_resume_time = jiffies + fqs_stutter * msecs_to_jiffies(1000);
 		while (ULONG_CMP_LT(jiffies, fqs_resume_time) &&
 		       !kthread_should_stop()) {
 			schedule_timeout_interruptible(1);
@@ -1345,7 +1345,7 @@ rcu_torture_stats(void *arg)
 {
 	VERBOSE_TOROUT_STRING("rcu_torture_stats task started");
 	do {
-		schedule_timeout_interruptible(stat_interval * HZ);
+		schedule_timeout_interruptible(stat_interval * msecs_to_jiffies(1000));
 		rcu_torture_stats_print();
 		torture_shutdown_absorb("rcu_torture_stats");
 	} while (!torture_must_stop());
@@ -1430,7 +1430,7 @@ static int rcu_torture_stall(void *args)
 	VERBOSE_TOROUT_STRING("rcu_torture_stall task started");
 	if (stall_cpu_holdoff > 0) {
 		VERBOSE_TOROUT_STRING("rcu_torture_stall begin holdoff");
-		schedule_timeout_interruptible(stall_cpu_holdoff * HZ);
+		schedule_timeout_interruptible(stall_cpu_holdoff * msecs_to_jiffies(1000));
 		VERBOSE_TOROUT_STRING("rcu_torture_stall end holdoff");
 	}
 	if (!kthread_should_stop()) {
@@ -1447,7 +1447,7 @@ static int rcu_torture_stall(void *args)
 	}
 	torture_shutdown_absorb("rcu_torture_stall");
 	while (!kthread_should_stop())
-		schedule_timeout_interruptible(10 * HZ);
+		schedule_timeout_interruptible(10 * msecs_to_jiffies(1000));
 	return 0;
 }
 
@@ -1837,14 +1837,14 @@ rcu_torture_init(void)
 			goto unwind;
 	}
 	if (test_no_idle_hz && shuffle_interval > 0) {
-		firsterr = torture_shuffle_init(shuffle_interval * HZ);
+		firsterr = torture_shuffle_init(shuffle_interval * msecs_to_jiffies(1000));
 		if (firsterr)
 			goto unwind;
 	}
 	if (stutter < 0)
 		stutter = 0;
 	if (stutter) {
-		firsterr = torture_stutter_init(stutter * HZ);
+		firsterr = torture_stutter_init(stutter * msecs_to_jiffies(1000));
 		if (firsterr)
 			goto unwind;
 	}
@@ -1864,7 +1864,7 @@ rcu_torture_init(void)
 	if ((test_boost == 1 && cur_ops->can_boost) ||
 	    test_boost == 2) {
 
-		boost_starttime = jiffies + test_boost_interval * HZ;
+		boost_starttime = jiffies + test_boost_interval * msecs_to_jiffies(1000);
 
 		firsterr = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "RCU_TORTURE",
 					     rcutorture_booster_init,
@@ -1876,7 +1876,7 @@ rcu_torture_init(void)
 	firsterr = torture_shutdown_init(shutdown_secs, rcu_torture_cleanup);
 	if (firsterr)
 		goto unwind;
-	firsterr = torture_onoff_init(onoff_holdoff * HZ, onoff_interval * HZ);
+	firsterr = torture_onoff_init(onoff_holdoff * msecs_to_jiffies(1000), onoff_interval * msecs_to_jiffies(1000));
 	if (firsterr)
 		goto unwind;
 	firsterr = rcu_torture_stall_init();

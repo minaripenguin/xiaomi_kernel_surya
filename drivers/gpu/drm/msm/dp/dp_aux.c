@@ -176,7 +176,7 @@ static int dp_aux_cmd_fifo_tx(struct dp_aux_private *aux,
 		struct drm_dp_aux_msg *msg)
 {
 	u32 ret = 0, len = 0, timeout;
-	int const aux_timeout_ms = HZ/4;
+	int const aux_timeout_ms = msecs_to_jiffies(1000)/4;
 
 	reinit_completion(&aux->comp);
 
@@ -533,7 +533,7 @@ static ssize_t dp_aux_transfer_debug(struct drm_dp_aux *drm_aux,
 			ret = aux->sim_bridge->transfer(aux->sim_bridge,
 				drm_aux, msg);
 		} else if (aux->read) {
-			timeout = wait_for_completion_timeout(&aux->comp, HZ);
+			timeout = wait_for_completion_timeout(&aux->comp, msecs_to_jiffies(1000));
 			if (!timeout) {
 				pr_err("read timeout 0x%x\n", msg->address);
 				atomic_set(&aux->aborted, 1);
@@ -547,7 +547,7 @@ static ssize_t dp_aux_transfer_debug(struct drm_dp_aux *drm_aux,
 			memcpy(aux->dpcd + msg->address, msg->buffer,
 				msg->size);
 
-			timeout = wait_for_completion_timeout(&aux->comp, HZ);
+			timeout = wait_for_completion_timeout(&aux->comp, msecs_to_jiffies(1000));
 			if (!timeout) {
 				pr_err("write timeout 0x%x\n", msg->address);
 				atomic_set(&aux->aborted, 1);

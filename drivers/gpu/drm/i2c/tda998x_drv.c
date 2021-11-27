@@ -613,7 +613,7 @@ static void tda998x_edid_delay_done(unsigned long data)
 static void tda998x_edid_delay_start(struct tda998x_priv *priv)
 {
 	priv->edid_delay_active = true;
-	mod_timer(&priv->edid_delay_timer, jiffies + HZ/10);
+	mod_timer(&priv->edid_delay_timer, jiffies + msecs_to_jiffies(1000)/10);
 }
 
 static int tda998x_edid_delay_wait(struct tda998x_priv *priv)

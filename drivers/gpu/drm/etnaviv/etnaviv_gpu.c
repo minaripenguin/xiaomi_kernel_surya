@@ -536,7 +536,7 @@ static void etnaviv_gpu_enable_mlcg(struct etnaviv_gpu *gpu)
 		pmc |= VIVS_PM_MODULE_CONTROLS_DISABLE_MODULE_CLOCK_GATING_PA;
 
 	/*
-	 * Disable PE clock gating on revs < 5.0.0.0 when HZ is
+	 * Disable PE clock gating on revs < 5.0.0.0 when msecs_to_jiffies(1000) is
 	 * present without a bug fix.
 	 */
 	if (gpu->identity.revision < 0x5000 &&

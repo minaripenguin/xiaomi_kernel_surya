@@ -433,7 +433,7 @@ static int wm97xx_read_samples(struct wm97xx *wm)
 			* pen is up and quicky restore it to ~one task
 			* switch when pen is down again.
 			*/
-			if (wm->ts_reader_interval < HZ / 10)
+			if (wm->ts_reader_interval < msecs_to_jiffies(1000) / 10)
 				wm->ts_reader_interval++;
 		}
 
@@ -515,7 +515,7 @@ static int wm97xx_ts_input_open(struct input_dev *idev)
 	INIT_DELAYED_WORK(&wm->ts_reader, wm97xx_ts_reader);
 	INIT_WORK(&wm->pen_event_work, wm97xx_pen_irq_worker);
 
-	wm->ts_reader_min_interval = HZ >= 100 ? HZ / 100 : 1;
+	wm->ts_reader_min_interval = msecs_to_jiffies(1000) >= 100 ? msecs_to_jiffies(1000) / 100 : 1;
 	if (wm->ts_reader_min_interval < 1)
 		wm->ts_reader_min_interval = 1;
 	wm->ts_reader_interval = wm->ts_reader_min_interval;

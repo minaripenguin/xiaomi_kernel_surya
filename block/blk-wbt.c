@@ -98,7 +98,7 @@ static bool wb_recent_wait(struct rq_wb *rwb)
 {
 	struct bdi_writeback *wb = &rwb->queue->backing_dev_info->wb;
 
-	return time_before(jiffies, wb->dirty_sleep + HZ);
+	return time_before(jiffies, wb->dirty_sleep + msecs_to_jiffies(1000));
 }
 
 static inline struct rq_wait *get_rq_wait(struct rq_wb *rwb, bool is_kswapd)
@@ -470,8 +470,8 @@ static bool close_io(struct rq_wb *rwb)
 {
 	const unsigned long now = jiffies;
 
-	return time_before(now, rwb->last_issue + HZ / 10) ||
-		time_before(now, rwb->last_comp + HZ / 10);
+	return time_before(now, rwb->last_issue + msecs_to_jiffies(1000) / 10) ||
+		time_before(now, rwb->last_comp + msecs_to_jiffies(1000) / 10);
 }
 
 #define REQ_HIPRIO	(REQ_SYNC | REQ_META | REQ_PRIO)

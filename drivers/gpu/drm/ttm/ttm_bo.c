@@ -443,7 +443,7 @@ static void ttm_bo_cleanup_refs_or_queue(struct ttm_buffer_object *bo)
 		 * fences block for the BO to become idle
 		 */
 		reservation_object_wait_timeout_rcu(bo->resv, true, false,
-						    30 * HZ);
+						    30 * msecs_to_jiffies(1000));
 		spin_lock(&glob->lru_lock);
 		goto error;
 	}
@@ -484,7 +484,7 @@ error:
 	spin_unlock(&glob->lru_lock);
 
 	schedule_delayed_work(&bdev->wq,
-			      ((HZ / 100) < 1) ? 1 : HZ / 100);
+			      ((HZ / 100) < 1) ? 1 : msecs_to_jiffies(1000) / 100);
 }
 
 /**
@@ -524,7 +524,7 @@ static int ttm_bo_cleanup_refs_and_unlock(struct ttm_buffer_object *bo,
 
 		lret = reservation_object_wait_timeout_rcu(resv, true,
 							   interruptible,
-							   30 * HZ);
+							   30 * msecs_to_jiffies(1000));
 
 		if (lret < 0)
 			return lret;
@@ -631,7 +631,7 @@ static void ttm_bo_delayed_workqueue(struct work_struct *work)
 
 	if (ttm_bo_delayed_delete(bdev, false)) {
 		schedule_delayed_work(&bdev->wq,
-				      ((HZ / 100) < 1) ? 1 : HZ / 100);
+				      ((HZ / 100) < 1) ? 1 : msecs_to_jiffies(1000) / 100);
 	}
 }
 
@@ -669,7 +669,7 @@ void ttm_bo_unlock_delayed_workqueue(struct ttm_bo_device *bdev, int resched)
 {
 	if (resched)
 		schedule_delayed_work(&bdev->wq,
-				      ((HZ / 100) < 1) ? 1 : HZ / 100);
+				      ((HZ / 100) < 1) ? 1 : msecs_to_jiffies(1000) / 100);
 }
 EXPORT_SYMBOL(ttm_bo_unlock_delayed_workqueue);
 
@@ -1656,7 +1656,7 @@ EXPORT_SYMBOL(ttm_bo_unmap_virtual);
 int ttm_bo_wait(struct ttm_buffer_object *bo,
 		bool interruptible, bool no_wait)
 {
-	long timeout = 15 * HZ;
+	long timeout = 15 * msecs_to_jiffies(1000);
 
 	if (no_wait) {
 		if (reservation_object_test_signaled_rcu(bo->resv, true))

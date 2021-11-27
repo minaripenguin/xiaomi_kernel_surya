@@ -1322,8 +1322,8 @@ static int __nbd_ioctl(struct block_device *bdev, struct nbd_device *nbd,
 		return 0;
 	case NBD_SET_TIMEOUT:
 		if (arg) {
-			nbd->tag_set.timeout = arg * HZ;
-			blk_queue_rq_timeout(nbd->disk->queue, arg * HZ);
+			nbd->tag_set.timeout = arg * msecs_to_jiffies(1000);
+			blk_queue_rq_timeout(nbd->disk->queue, arg * msecs_to_jiffies(1000));
 		}
 		return 0;
 
@@ -1831,13 +1831,13 @@ again:
 	}
 	if (info->attrs[NBD_ATTR_TIMEOUT]) {
 		u64 timeout = nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]);
-		nbd->tag_set.timeout = timeout * HZ;
-		blk_queue_rq_timeout(nbd->disk->queue, timeout * HZ);
+		nbd->tag_set.timeout = timeout * msecs_to_jiffies(1000);
+		blk_queue_rq_timeout(nbd->disk->queue, timeout * msecs_to_jiffies(1000));
 	}
 	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
 		config->dead_conn_timeout =
 			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
-		config->dead_conn_timeout *= HZ;
+		config->dead_conn_timeout *= msecs_to_jiffies(1000);
 	}
 	if (info->attrs[NBD_ATTR_SERVER_FLAGS])
 		config->flags =
@@ -2002,13 +2002,13 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
 
 	if (info->attrs[NBD_ATTR_TIMEOUT]) {
 		u64 timeout = nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]);
-		nbd->tag_set.timeout = timeout * HZ;
-		blk_queue_rq_timeout(nbd->disk->queue, timeout * HZ);
+		nbd->tag_set.timeout = timeout * msecs_to_jiffies(1000);
+		blk_queue_rq_timeout(nbd->disk->queue, timeout * msecs_to_jiffies(1000));
 	}
 	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
 		config->dead_conn_timeout =
 			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
-		config->dead_conn_timeout *= HZ;
+		config->dead_conn_timeout *= msecs_to_jiffies(1000);
 	}
 	if (info->attrs[NBD_ATTR_CLIENT_FLAGS]) {
 		u64 flags = nla_get_u64(info->attrs[NBD_ATTR_CLIENT_FLAGS]);

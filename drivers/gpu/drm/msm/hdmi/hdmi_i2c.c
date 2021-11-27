@@ -171,7 +171,7 @@ static int msm_hdmi_i2c_xfer(struct i2c_adapter *i2c,
 			HDMI_DDC_CTRL_TRANSACTION_CNT(num - 1) |
 			HDMI_DDC_CTRL_GO);
 
-	ret = wait_event_timeout(hdmi_i2c->ddc_event, sw_done(hdmi_i2c), HZ/4);
+	ret = wait_event_timeout(hdmi_i2c->ddc_event, sw_done(hdmi_i2c), msecs_to_jiffies(1000)/4);
 	if (ret <= 0) {
 		if (ret == 0)
 			ret = -ETIMEDOUT;

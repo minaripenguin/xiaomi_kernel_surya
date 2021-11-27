@@ -870,7 +870,7 @@ nouveau_gem_ioctl_cpu_prep(struct drm_device *dev, void *data,
 	nvbo = nouveau_gem_object(gem);
 
 	lret = reservation_object_wait_timeout_rcu(nvbo->bo.resv, write, true,
-						   no_wait ? 0 : 30 * HZ);
+						   no_wait ? 0 : 30 * msecs_to_jiffies(1000));
 	if (!lret)
 		ret = -EBUSY;
 	else if (lret > 0)

@@ -1071,7 +1071,7 @@ static void xen_blk_drain_io(struct xen_blkif_ring *ring)
 		if (atomic_read(&ring->inflight) == 0)
 			break;
 		wait_for_completion_interruptible_timeout(
-				&blkif->drain_complete, HZ);
+				&blkif->drain_complete, msecs_to_jiffies(1000));
 
 		if (!atomic_read(&blkif->drain))
 			break;

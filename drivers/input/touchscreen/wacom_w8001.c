@@ -365,7 +365,7 @@ static int w8001_command(struct w8001 *w8001, unsigned char command,
 	rc = serio_write(w8001->serio, command);
 	if (rc == 0 && wait_response) {
 
-		wait_for_completion_timeout(&w8001->cmd_done, HZ);
+		wait_for_completion_timeout(&w8001->cmd_done, msecs_to_jiffies(1000));
 		if (w8001->response_type != W8001_QUERY_PACKET)
 			rc = -EIO;
 	}

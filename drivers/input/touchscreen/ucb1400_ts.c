@@ -291,7 +291,7 @@ static int ucb1400_ts_detect_irq(struct ucb1400_ts *ucb,
 	ucb1400_reg_write(ucb->ac97, UCB_ADC_CR, UCB_ADC_ENA | UCB_ADC_START);
 
 	/* Wait for the conversion to complete. */
-	timeout = jiffies + HZ/2;
+	timeout = jiffies + msecs_to_jiffies(1000)/2;
 	while (!(ucb1400_reg_read(ucb->ac97, UCB_ADC_DATA) &
 						UCB_ADC_DAT_VALID)) {
 		cpu_relax();

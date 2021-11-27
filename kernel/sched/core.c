@@ -4150,7 +4150,7 @@ unsigned long long task_sched_runtime(struct task_struct *p)
 unsigned int capacity_margin_freq = 1280; /* ~20% margin */
 
 /*
- * This function gets called by the timer code, with HZ frequency.
+ * This function gets called by the timer code, with msecs_to_jiffies(1000) frequency.
  * We call it with interrupts disabled.
  */
 void scheduler_tick(void)
@@ -4223,7 +4223,7 @@ u64 scheduler_tick_max_deferment(void)
 	struct rq *rq = this_rq();
 	unsigned long next, now = READ_ONCE(jiffies);
 
-	next = rq->last_sched_tick + HZ;
+	next = rq->last_sched_tick + msecs_to_jiffies(1000);
 
 	if (time_before_eq(next, now))
 		return 0;
@@ -7706,7 +7706,7 @@ void ___might_sleep(const char *file, int line, int preempt_offset)
 	    oops_in_progress)
 		return;
 
-	if (time_before(jiffies, prev_jiffy + HZ) && prev_jiffy)
+	if (time_before(jiffies, prev_jiffy + msecs_to_jiffies(1000)) && prev_jiffy)
 		return;
 	prev_jiffy = jiffies;
 

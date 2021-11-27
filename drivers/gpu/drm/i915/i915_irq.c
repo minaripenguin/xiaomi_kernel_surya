@@ -2638,7 +2638,7 @@ static void i915_reset_device(struct drm_i915_private *dev_priv)
 	kobject_uevent_env(kobj, KOBJ_CHANGE, reset_event);
 
 	/* Use a watchdog to ensure that our reset completes */
-	i915_wedge_on_timeout(&w, dev_priv, 5*HZ) {
+	i915_wedge_on_timeout(&w, dev_priv, 5*msecs_to_jiffies(1000)) {
 		intel_prepare_reset(dev_priv);
 
 		/* Signal that locked waiters should reset the GPU */

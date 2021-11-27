@@ -280,7 +280,7 @@ static int hv_kbd_connect_to_vsp(struct hv_device *hv_dev)
 	if (error)
 		return error;
 
-	if (!wait_for_completion_timeout(&kbd_dev->wait_event, 10 * HZ))
+	if (!wait_for_completion_timeout(&kbd_dev->wait_event, 10 * msecs_to_jiffies(1000)))
 		return -ETIMEDOUT;
 
 	response = &kbd_dev->protocol_resp;

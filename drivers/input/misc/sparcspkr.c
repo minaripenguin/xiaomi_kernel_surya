@@ -126,7 +126,7 @@ static int grover_spkr_event(struct input_dev *dev, unsigned int type, unsigned 
 		sbus_writeb(sbus_readb(info->enable_reg) | 3, info->enable_reg);
 		/* set command for counter 2, 2 byte write */
 		sbus_writeb(0xB6, info->freq_regs + 1);
-		/* select desired HZ */
+		/* select desired msecs_to_jiffies(1000) */
 		sbus_writeb(count & 0xff, info->freq_regs + 0);
 		sbus_writeb((count >> 8) & 0xff, info->freq_regs + 0);
 	} else {

@@ -45,7 +45,7 @@
 
 #define QT2160_NUM_LEDS_X	8
 
-#define QT2160_CYCLE_INTERVAL	(2*HZ)
+#define QT2160_CYCLE_INTERVAL	(2*msecs_to_jiffies(1000))
 
 static unsigned char qt2160_key2code[] = {
 	KEY_0, KEY_1, KEY_2, KEY_3,

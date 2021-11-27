@@ -355,7 +355,7 @@ static int inr;		/* size of reply buffer, when called from interrupt */
 #define R_SECTOR	(reply_buffer[5])
 #define R_SIZECODE	(reply_buffer[6])
 
-#define SEL_DLY		(2 * HZ / 100)
+#define SEL_DLY		(2 * msecs_to_jiffies(1000) / 100)
 
 /*
  * this struct defines the different floppy drive types.
@@ -379,26 +379,26 @@ static struct {
   |     |   |   |     |       |      |   |     |     |    |     Interrupt timeout
   |     |   |   |     |       |      |   |     |     |    |     |   Max nonintlv. sectors
   |     |   |   |     |       |      |   |     |     |    |     |   | -Max Errors- flags */
-{{0,  500, 16, 16, 8000,    1*HZ, 3*HZ,  0, SEL_DLY, 5,  80, 3*HZ, 20, {3,1,2,0,2}, 0,
-      0, { 7, 4, 8, 2, 1, 5, 3,10}, 3*HZ/2, 0 }, "unknown" },
+{{0,  500, 16, 16, 8000,    1*msecs_to_jiffies(1000), 3*msecs_to_jiffies(1000),  0, SEL_DLY, 5,  80, 3*msecs_to_jiffies(1000), 20, {3,1,2,0,2}, 0,
+      0, { 7, 4, 8, 2, 1, 5, 3,10}, 3*msecs_to_jiffies(1000)/2, 0 }, "unknown" },
 
-{{1,  300, 16, 16, 8000,    1*HZ, 3*HZ,  0, SEL_DLY, 5,  40, 3*HZ, 17, {3,1,2,0,2}, 0,
-      0, { 1, 0, 0, 0, 0, 0, 0, 0}, 3*HZ/2, 1 }, "360K PC" }, /*5 1/4 360 KB PC*/
+{{1,  300, 16, 16, 8000,    1*msecs_to_jiffies(1000), 3*msecs_to_jiffies(1000),  0, SEL_DLY, 5,  40, 3*msecs_to_jiffies(1000), 17, {3,1,2,0,2}, 0,
+      0, { 1, 0, 0, 0, 0, 0, 0, 0}, 3*msecs_to_jiffies(1000)/2, 1 }, "360K PC" }, /*5 1/4 360 KB PC*/
 
-{{2,  500, 16, 16, 6000, 4*HZ/10, 3*HZ, 14, SEL_DLY, 6,  83, 3*HZ, 17, {3,1,2,0,2}, 0,
-      0, { 2, 5, 6,23,10,20,12, 0}, 3*HZ/2, 2 }, "1.2M" }, /*5 1/4 HD AT*/
+{{2,  500, 16, 16, 6000, 4*msecs_to_jiffies(1000)/10, 3*msecs_to_jiffies(1000), 14, SEL_DLY, 6,  83, 3*msecs_to_jiffies(1000), 17, {3,1,2,0,2}, 0,
+      0, { 2, 5, 6,23,10,20,12, 0}, 3*msecs_to_jiffies(1000)/2, 2 }, "1.2M" }, /*5 1/4 HD AT*/
 
-{{3,  250, 16, 16, 3000,    1*HZ, 3*HZ,  0, SEL_DLY, 5,  83, 3*HZ, 20, {3,1,2,0,2}, 0,
-      0, { 4,22,21,30, 3, 0, 0, 0}, 3*HZ/2, 4 }, "720k" }, /*3 1/2 DD*/
+{{3,  250, 16, 16, 3000,    1*msecs_to_jiffies(1000), 3*msecs_to_jiffies(1000),  0, SEL_DLY, 5,  83, 3*msecs_to_jiffies(1000), 20, {3,1,2,0,2}, 0,
+      0, { 4,22,21,30, 3, 0, 0, 0}, 3*msecs_to_jiffies(1000)/2, 4 }, "720k" }, /*3 1/2 DD*/
 
-{{4,  500, 16, 16, 4000, 4*HZ/10, 3*HZ, 10, SEL_DLY, 5,  83, 3*HZ, 20, {3,1,2,0,2}, 0,
-      0, { 7, 4,25,22,31,21,29,11}, 3*HZ/2, 7 }, "1.44M" }, /*3 1/2 HD*/
+{{4,  500, 16, 16, 4000, 4*msecs_to_jiffies(1000)/10, 3*msecs_to_jiffies(1000), 10, SEL_DLY, 5,  83, 3*msecs_to_jiffies(1000), 20, {3,1,2,0,2}, 0,
+      0, { 7, 4,25,22,31,21,29,11}, 3*msecs_to_jiffies(1000)/2, 7 }, "1.44M" }, /*3 1/2 HD*/
 
-{{5, 1000, 15,  8, 3000, 4*HZ/10, 3*HZ, 10, SEL_DLY, 5,  83, 3*HZ, 40, {3,1,2,0,2}, 0,
-      0, { 7, 8, 4,25,28,22,31,21}, 3*HZ/2, 8 }, "2.88M AMI BIOS" }, /*3 1/2 ED*/
+{{5, 1000, 15,  8, 3000, 4*msecs_to_jiffies(1000)/10, 3*msecs_to_jiffies(1000), 10, SEL_DLY, 5,  83, 3*msecs_to_jiffies(1000), 40, {3,1,2,0,2}, 0,
+      0, { 7, 8, 4,25,28,22,31,21}, 3*msecs_to_jiffies(1000)/2, 8 }, "2.88M AMI BIOS" }, /*3 1/2 ED*/
 
-{{6, 1000, 15,  8, 3000, 4*HZ/10, 3*HZ, 10, SEL_DLY, 5,  83, 3*HZ, 40, {3,1,2,0,2}, 0,
-      0, { 7, 8, 4,25,28,22,31,21}, 3*HZ/2, 8 }, "2.88M" } /*3 1/2 ED*/
+{{6, 1000, 15,  8, 3000, 4*msecs_to_jiffies(1000)/10, 3*msecs_to_jiffies(1000), 10, SEL_DLY, 5,  83, 3*msecs_to_jiffies(1000), 40, {3,1,2,0,2}, 0,
+      0, { 7, 8, 4,25,28,22,31,21}, 3*msecs_to_jiffies(1000)/2, 8 }, "2.88M" } /*3 1/2 ED*/
 /*    |  --autodetected formats---    |      |      |
  *    read_track                      |      |    Name printed when booting
  *				      |     Native format
@@ -675,7 +675,7 @@ static void __reschedule_timeout(int drive, const char *message)
 		drive = current_drive;
 
 	if (drive < 0 || drive >= N_DRIVE) {
-		delay = 20UL * HZ;
+		delay = 20UL * msecs_to_jiffies(1000);
 		drive = 0;
 	} else
 		delay = UDP->timeout;
@@ -923,9 +923,9 @@ static void floppy_off(unsigned int drive)
 	/* make spindle stop in a position which minimizes spinup time
 	 * next time */
 	if (UDP->rps) {
-		delta = jiffies - UDRS->first_read_date + HZ -
+		delta = jiffies - UDRS->first_read_date + msecs_to_jiffies(1000) -
 		    UDP->spindown_offset;
-		delta = ((delta * UDP->rps) % HZ) / UDP->rps;
+		delta = ((delta * UDP->rps) % msecs_to_jiffies(1000)) / UDP->rps;
 		motor_off_timer[drive].expires =
 		    jiffies + UDP->spindown - delta;
 	}
@@ -1012,7 +1012,7 @@ static void fd_watchdog(void)
 	} else {
 		cancel_delayed_work(&fd_timer);
 		fd_timer_fn = fd_watchdog;
-		queue_delayed_work(floppy_wq, &fd_timer, HZ / 10);
+		queue_delayed_work(floppy_wq, &fd_timer, msecs_to_jiffies(1000) / 10);
 	}
 }
 
@@ -1353,7 +1353,7 @@ static int fdc_dtr(void)
 	 * Pause 5 msec to avoid trouble. (Needs to be 2 jiffies)
 	 */
 	FDCS->dtr = raw_cmd->rate & 3;
-	return fd_wait_for_completion(jiffies + 2UL * HZ / 100, floppy_ready);
+	return fd_wait_for_completion(jiffies + 2UL * msecs_to_jiffies(1000) / 100, floppy_ready);
 }				/* fdc_dtr */
 
 static void tell_sector(void)
@@ -4362,7 +4362,7 @@ static void __init daring(int *ints, int param, int param2)
 			    FD_SILENT_DCL_CLEAR;
 		} else {
 			default_drive_params[i].params.select_delay =
-			    2 * HZ / 100;
+			    2 * msecs_to_jiffies(1000) / 100;
 			default_drive_params[i].params.flags &=
 			    ~FD_SILENT_DCL_CLEAR;
 		}

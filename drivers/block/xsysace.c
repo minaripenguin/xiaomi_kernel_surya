@@ -520,7 +520,7 @@ static void ace_fsm_dostate(struct ace_device *ace)
 		if (ace->id_req_count || ace_get_next_request(ace->queue)) {
 			ace->fsm_iter_num++;
 			ace->fsm_state = ACE_FSM_STATE_REQ_LOCK;
-			mod_timer(&ace->stall_timer, jiffies + HZ);
+			mod_timer(&ace->stall_timer, jiffies + msecs_to_jiffies(1000));
 			if (!timer_pending(&ace->stall_timer))
 				add_timer(&ace->stall_timer);
 			break;
@@ -783,7 +783,7 @@ static void ace_stall_timer(unsigned long data)
 
 	/* Rearm the stall timer *before* entering FSM (which may then
 	 * delete the timer) */
-	mod_timer(&ace->stall_timer, jiffies + HZ);
+	mod_timer(&ace->stall_timer, jiffies + msecs_to_jiffies(1000));
 
 	/* Loop over state machine until told to stop */
 	ace->fsm_continue_flag = 1;

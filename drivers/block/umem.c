@@ -684,7 +684,7 @@ static int check_battery(struct cardinfo *card, int battery, int status)
 	} else if (!card->battery[battery].good &&
 		   !card->battery[battery].warned &&
 		   time_after_eq(jiffies, card->battery[battery].last_change +
-				 (HZ * 60 * 60 * 5))) {
+				 (msecs_to_jiffies(1000) * 60 * 60 * 5))) {
 		dev_printk(KERN_ERR, &card->dev->dev,
 			"Battery %d still FAILED after 5 hours\n", battery + 1);
 		card->battery[battery].warned = 1;
@@ -740,7 +740,7 @@ static void init_battery_timer(void)
 {
 	init_timer(&battery_timer);
 	battery_timer.function = check_all_batteries;
-	battery_timer.expires = jiffies + (HZ * 60);
+	battery_timer.expires = jiffies + (msecs_to_jiffies(1000) * 60);
 	add_timer(&battery_timer);
 }
 

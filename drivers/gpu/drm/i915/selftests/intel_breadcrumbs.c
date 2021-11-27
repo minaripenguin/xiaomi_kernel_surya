@@ -279,7 +279,7 @@ static int wait_atomic(atomic_t *p)
 
 static int wait_atomic_timeout(atomic_t *p)
 {
-	return schedule_timeout(10 * HZ) ? 0 : -ETIMEDOUT;
+	return schedule_timeout(10 * msecs_to_jiffies(1000)) ? 0 : -ETIMEDOUT;
 }
 
 static bool wait_for_ready(struct igt_wakeup *w)

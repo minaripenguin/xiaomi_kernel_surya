@@ -145,7 +145,7 @@ static int bench_sync(void *arg)
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	count = 0;
 	kt = ktime_get();
-	end_time = jiffies + HZ/10;
+	end_time = jiffies + msecs_to_jiffies(1000)/10;
 	do {
 		u32 x;
 
@@ -163,7 +163,7 @@ static int bench_sync(void *arg)
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	count = 0;
 	kt = ktime_get();
-	end_time = jiffies + HZ/10;
+	end_time = jiffies + msecs_to_jiffies(1000)/10;
 	do {
 		u64 id = i915_prandom_u64_state(&prng);
 
@@ -203,7 +203,7 @@ static int bench_sync(void *arg)
 	/* Benchmark setting the first N (in order) contexts */
 	count = 0;
 	kt = ktime_get();
-	end_time = jiffies + HZ/10;
+	end_time = jiffies + msecs_to_jiffies(1000)/10;
 	do {
 		__intel_timeline_sync_set(tl, count++, 0);
 	} while (!time_after(jiffies, end_time));
@@ -236,7 +236,7 @@ static int bench_sync(void *arg)
 	prandom_seed_state(&prng, i915_selftest.random_seed);
 	count = 0;
 	kt = ktime_get();
-	end_time = jiffies + HZ/10;
+	end_time = jiffies + msecs_to_jiffies(1000)/10;
 	do {
 		u32 id = random_engine(&prng);
 		u32 seqno = prandom_u32_state(&prng);
@@ -264,7 +264,7 @@ static int bench_sync(void *arg)
 
 		count = 0;
 		kt = ktime_get();
-		end_time = jiffies + HZ/10;
+		end_time = jiffies + msecs_to_jiffies(1000)/10;
 		do {
 			/* Without assuming too many details of the underlying
 			 * implementation, try to identify its phase-changes

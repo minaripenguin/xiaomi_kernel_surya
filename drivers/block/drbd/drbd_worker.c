@@ -525,13 +525,13 @@ static int drbd_rs_controller(struct drbd_device *device, unsigned int sect_in)
 	dc = rcu_dereference(device->ldev->disk_conf);
 	plan = rcu_dereference(device->rs_plan_s);
 
-	steps = plan->size; /* (dc->c_plan_ahead * 10 * SLEEP_TIME) / HZ; */
+	steps = plan->size; /* (dc->c_plan_ahead * 10 * SLEEP_TIME) / msecs_to_jiffies(1000); */
 
 	if (device->rs_in_flight + sect_in == 0) { /* At start of resync */
-		want = ((dc->resync_rate * 2 * SLEEP_TIME) / HZ) * steps;
+		want = ((dc->resync_rate * 2 * SLEEP_TIME) / msecs_to_jiffies(1000)) * steps;
 	} else { /* normal path */
 		want = dc->c_fill_target ? dc->c_fill_target :
-			sect_in * dc->c_delay_target * HZ / (SLEEP_TIME * 10);
+			sect_in * dc->c_delay_target * msecs_to_jiffies(1000) / (SLEEP_TIME * 10);
 	}
 
 	correction = want - device->rs_in_flight - plan->total;
@@ -549,7 +549,7 @@ static int drbd_rs_controller(struct drbd_device *device, unsigned int sect_in)
 	if (req_sect < 0)
 		req_sect = 0;
 
-	max_sect = (dc->c_max_rate * 2 * SLEEP_TIME) / HZ;
+	max_sect = (dc->c_max_rate * 2 * SLEEP_TIME) / msecs_to_jiffies(1000);
 	if (req_sect > max_sect)
 		req_sect = max_sect;
 
@@ -574,10 +574,10 @@ static int drbd_rs_number_requests(struct drbd_device *device)
 	mxb = drbd_get_max_buffers(device) / 2;
 	if (rcu_dereference(device->rs_plan_s)->size) {
 		number = drbd_rs_controller(device, sect_in) >> (BM_BLOCK_SHIFT - 9);
-		device->c_sync_rate = number * HZ * (BM_BLOCK_SIZE / 1024) / SLEEP_TIME;
+		device->c_sync_rate = number * msecs_to_jiffies(1000) * (BM_BLOCK_SIZE / 1024) / SLEEP_TIME;
 	} else {
 		device->c_sync_rate = rcu_dereference(device->ldev->disk_conf)->resync_rate;
-		number = SLEEP_TIME * device->c_sync_rate  / ((BM_BLOCK_SIZE / 1024) * HZ);
+		number = SLEEP_TIME * device->c_sync_rate  / ((BM_BLOCK_SIZE / 1024) * msecs_to_jiffies(1000));
 	}
 	rcu_read_unlock();
 
@@ -882,7 +882,7 @@ int drbd_resync_finished(struct drbd_device *device)
 		 * queue (or even the read operations for those packets
 		 * is not finished by now).   Retry in 100ms. */
 
-		schedule_timeout_interruptible(HZ / 10);
+		schedule_timeout_interruptible(msecs_to_jiffies(1000) / 10);
 		dw = kmalloc(sizeof(struct drbd_device_work), GFP_ATOMIC);
 		if (dw) {
 			dw->w.cb = w_resync_finished;
@@ -893,7 +893,7 @@ int drbd_resync_finished(struct drbd_device *device)
 		drbd_err(device, "Warn failed to drbd_rs_del_all() and to kmalloc(dw).\n");
 	}
 
-	dt = (jiffies - device->rs_start - device->rs_paused) / HZ;
+	dt = (jiffies - device->rs_start - device->rs_paused) / msecs_to_jiffies(1000);
 	if (dt <= 0)
 		dt = 1;
 
@@ -903,7 +903,7 @@ int drbd_resync_finished(struct drbd_device *device)
 		db -= device->ov_left;
 
 	dbdt = Bit2KB(db/dt);
-	device->rs_paused /= HZ;
+	device->rs_paused /= msecs_to_jiffies(1000);
 
 	if (!get_ldev(device))
 		goto out;
@@ -1715,7 +1715,7 @@ static void do_start_resync(struct drbd_device *device)
 {
 	if (atomic_read(&device->unacked_cnt) || atomic_read(&device->rs_pending_cnt)) {
 		drbd_warn(device, "postponing start_resync ...\n");
-		device->start_resync_timer.expires = jiffies + HZ/10;
+		device->start_resync_timer.expires = jiffies + msecs_to_jiffies(1000)/10;
 		add_timer(&device->start_resync_timer);
 		return;
 	}
@@ -1797,7 +1797,7 @@ void drbd_start_resync(struct drbd_device *device, enum drbd_conns side)
 		   that can take long */
 		if (!mutex_trylock(device->state_mutex)) {
 			set_bit(B_RS_H_DONE, &device->flags);
-			device->start_resync_timer.expires = jiffies + HZ/5;
+			device->start_resync_timer.expires = jiffies + msecs_to_jiffies(1000)/5;
 			add_timer(&device->start_resync_timer);
 			return;
 		}
@@ -1862,7 +1862,7 @@ void drbd_start_resync(struct drbd_device *device, enum drbd_conns side)
 		wake_up(&device->al_wait); /* for lc_reset() above */
 		/* reset rs_last_bcast when a resync or verify is started,
 		 * to deal with potential jiffies wrap. */
-		device->rs_last_bcast = jiffies - HZ;
+		device->rs_last_bcast = jiffies - msecs_to_jiffies(1000);
 
 		drbd_info(device, "Began resync as %s (will sync %lu KB [%lu bits set]).\n",
 		     drbd_conn_str(ns.conn),
@@ -1902,7 +1902,7 @@ void drbd_start_resync(struct drbd_device *device, enum drbd_conns side)
 
 				rcu_read_lock();
 				nc = rcu_dereference(connection->net_conf);
-				timeo = nc->ping_int * HZ + nc->ping_timeo * HZ / 9;
+				timeo = nc->ping_int * msecs_to_jiffies(1000) + nc->ping_timeo * msecs_to_jiffies(1000) / 9;
 				rcu_read_unlock();
 				schedule_timeout_interruptible(timeo);
 			}

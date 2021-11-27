@@ -169,7 +169,7 @@ armada_ovl_plane_update(struct drm_plane *plane, struct drm_crtc *crtc,
 			       dcrtc->base + LCD_SPU_SRAM_PARA1);
 	}
 
-	if (armada_drm_plane_work_wait(&dplane->base, HZ / 25) == 0)
+	if (armada_drm_plane_work_wait(&dplane->base, msecs_to_jiffies(1000) / 25) == 0)
 		armada_drm_plane_work_cancel(dcrtc, &dplane->base);
 
 	if (plane->fb != fb) {

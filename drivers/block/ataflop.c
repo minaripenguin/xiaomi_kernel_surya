@@ -306,12 +306,12 @@ static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
 static DECLARE_COMPLETION(format_wait);
 
 static unsigned long changed_floppies = 0xff, fake_change = 0;
-#define	CHECK_CHANGE_DELAY	HZ/2
+#define	CHECK_CHANGE_DELAY	msecs_to_jiffies(1000)/2
 
-#define	FD_MOTOR_OFF_DELAY	(3*HZ)
+#define	FD_MOTOR_OFF_DELAY	(3*msecs_to_jiffies(1000))
 #define	FD_MOTOR_OFF_MAXTRY	(10*20)
 
-#define FLOPPY_TIMEOUT		(6*HZ)
+#define FLOPPY_TIMEOUT		(6*msecs_to_jiffies(1000))
 #define RECALIBRATE_ERRORS	4	/* After this many errors the drive
 					 * will be recalibrated. */
 #define MAX_ERRORS		8	/* After this many errors the driver
@@ -507,7 +507,7 @@ static void fd_motor_off_timer( unsigned long dummy )
 	 * per second from then on...
 	 */
 	mod_timer(&motor_off_timer,
-		  jiffies + (MotorOffTrys++ < FD_MOTOR_OFF_MAXTRY ? HZ/20 : HZ/2));
+		  jiffies + (MotorOffTrys++ < FD_MOTOR_OFF_MAXTRY ? msecs_to_jiffies(1000)/20 : msecs_to_jiffies(1000)/2));
 }
 
 
@@ -960,7 +960,7 @@ static void fd_rwsec( void )
 		MultReadInProgress = 1;
 		mod_timer(&readtrack_timer,
 			  /* 1 rot. + 5 rot.s if motor was off  */
-			  jiffies + HZ/5 + (old_motoron ? 0 : HZ));
+			  jiffies + msecs_to_jiffies(1000)/5 + (old_motoron ? 0 : msecs_to_jiffies(1000)));
 	}
 	start_timeout();
 }
@@ -1019,7 +1019,7 @@ static void fd_readtrack_check( unsigned long dummy )
 		/* not yet finished, wait another tenth rotation */
 		local_irq_restore(flags);
 		DPRINT(("fd_readtrack_check(): not yet finished\n"));
-		mod_timer(&readtrack_timer, jiffies + HZ/5/10);
+		mod_timer(&readtrack_timer, jiffies + msecs_to_jiffies(1000)/5/10);
 	}
 }
 
@@ -1764,7 +1764,7 @@ static int __init fd_test_drive_present( int drive )
 	FDC_WRITE (FDCREG_TRACK, 0xff00);
 	FDC_WRITE( FDCREG_CMD, FDCCMD_RESTORE | FDCCMDADD_H | FDCSTEP_6 );
 
-	timeout = jiffies + 2*HZ+HZ/2;
+	timeout = jiffies + 2*msecs_to_jiffies(1000)+msecs_to_jiffies(1000)/2;
 	while (time_before(jiffies, timeout))
 		if (!(st_mfp.par_dt_reg & 0x20))
 			break;

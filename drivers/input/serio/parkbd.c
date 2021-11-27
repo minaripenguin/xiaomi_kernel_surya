@@ -108,7 +108,7 @@ static void parkbd_interrupt(void *dev_id)
 
 	if (parkbd_writing) {
 
-		if (parkbd_counter && ((parkbd_counter == 11) || time_after(jiffies, parkbd_last + HZ/100))) {
+		if (parkbd_counter && ((parkbd_counter == 11) || time_after(jiffies, parkbd_last + msecs_to_jiffies(1000)/100))) {
 			parkbd_counter = 0;
 			parkbd_buffer = 0;
 			parkbd_writing = 0;
@@ -127,7 +127,7 @@ static void parkbd_interrupt(void *dev_id)
 
 	} else {
 
-		if ((parkbd_counter == parkbd_mode + 10) || time_after(jiffies, parkbd_last + HZ/100)) {
+		if ((parkbd_counter == parkbd_mode + 10) || time_after(jiffies, parkbd_last + msecs_to_jiffies(1000)/100)) {
 			parkbd_counter = 0;
 			parkbd_buffer = 0;
 		}

@@ -1016,7 +1016,7 @@ static void drm_vblank_put(struct drm_device *dev, unsigned int pipe)
 			vblank_disable_fn((unsigned long)vblank);
 		else if (!dev->vblank_disable_immediate)
 			mod_timer(&vblank->disable_timer,
-				  jiffies + ((drm_vblank_offdelay * HZ)/1000));
+				  jiffies + ((drm_vblank_offdelay * msecs_to_jiffies(1000))/1000));
 	}
 }
 
@@ -1498,7 +1498,7 @@ int drm_wait_vblank_ioctl(struct drm_device *dev, void *data,
 	if (vblwait->request.sequence != seq) {
 		DRM_DEBUG("waiting on vblank count %u, crtc %u\n",
 			  vblwait->request.sequence, pipe);
-		DRM_WAIT_ON(ret, vblank->queue, 3 * HZ,
+		DRM_WAIT_ON(ret, vblank->queue, 3 * msecs_to_jiffies(1000),
 			    vblank_passed(drm_vblank_count(dev, pipe),
 					  vblwait->request.sequence) ||
 			    !READ_ONCE(vblank->enabled));

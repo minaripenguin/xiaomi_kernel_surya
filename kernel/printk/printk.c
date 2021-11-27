@@ -1170,7 +1170,7 @@ static int __init boot_delay_setup(char *str)
 	unsigned long lpj;
 
 	lpj = preset_lpj ? preset_lpj : 1000000;	/* some guess */
-	loops_per_msec = (unsigned long long)lpj / 1000 * HZ;
+	loops_per_msec = (unsigned long long)lpj / 1000 * msecs_to_jiffies(1000);
 
 	get_option(&str, &boot_delay);
 	if (boot_delay > 10 * 1000)
@@ -2939,7 +2939,7 @@ int printk_deferred(const char *fmt, ...)
  * This enforces a rate limit: not more than 10 kernel messages
  * every 5s to make a denial-of-service attack impossible.
  */
-DEFINE_RATELIMIT_STATE(printk_ratelimit_state, 5 * HZ, 10);
+DEFINE_RATELIMIT_STATE(printk_ratelimit_state, 5 * 1000, 10);
 
 int __printk_ratelimit(const char *func)
 {

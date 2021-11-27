@@ -557,7 +557,7 @@ static int igt_syncmap_random(void *arg)
 	 */
 
 	count = 0;
-	phase = jiffies + HZ/100 + 1;
+	phase = jiffies + msecs_to_jiffies(1000)/100 + 1;
 	do {
 		u64 context = i915_prandom_u64_state(&prng);
 

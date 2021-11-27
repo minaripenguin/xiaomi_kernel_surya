@@ -384,7 +384,7 @@ static inline void process_pending_queue(struct cpt_vf *cptvf,
 			/* check for timeout */
 			if (time_after_eq(jiffies,
 					  (info->time_in +
-					  (CPT_COMMAND_TIMEOUT * HZ)))) {
+					  (CPT_COMMAND_TIMEOUT * msecs_to_jiffies(1000))))) {
 				dev_err(&pdev->dev, "Request timed out");
 				pentry->completion_addr = NULL;
 				pentry->busy = false;

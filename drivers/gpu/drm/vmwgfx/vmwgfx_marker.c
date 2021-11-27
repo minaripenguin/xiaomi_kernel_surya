@@ -144,7 +144,7 @@ int vmw_wait_lag(struct vmw_private *dev_priv,
 		spin_unlock(&queue->lock);
 
 		ret = vmw_wait_seqno(dev_priv, false, seqno, true,
-					3*HZ);
+					3*msecs_to_jiffies(1000));
 
 		if (unlikely(ret != 0))
 			return ret;

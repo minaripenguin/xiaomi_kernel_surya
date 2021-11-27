@@ -3202,8 +3202,8 @@ static void fts_event_handler(struct work_struct *work)
 	 * read all the FIFO and parsing events
 	 */
 
-	/* wake_lock_timeout(&info->wakelock, HZ); */
-	__pm_wakeup_event(&info->wakeup_source, HZ);
+	/* wake_lock_timeout(&info->wakelock, msecs_to_jiffies(1000)); */
+	__pm_wakeup_event(&info->wakeup_source, msecs_to_jiffies(1000));
 	/* logError(1, "%s %s: begin\n", tag, __func__); */
 	regAdd = FIFO_CMD_READONE;
 
@@ -4015,7 +4015,7 @@ static void fts_resume_work(struct work_struct *work)
 
 	info = container_of(work, struct fts_ts_info, resume_work);
 
-	__pm_wakeup_event(&info->wakeup_source, HZ);
+	__pm_wakeup_event(&info->wakeup_source, msecs_to_jiffies(1000));
 
 	if (info->ts_pinctrl) {
 		/*
@@ -4056,7 +4056,7 @@ static void fts_suspend_work(struct work_struct *work)
 
 	info = container_of(work, struct fts_ts_info, suspend_work);
 
-	__pm_wakeup_event(&info->wakeup_source, HZ);
+	__pm_wakeup_event(&info->wakeup_source, msecs_to_jiffies(1000));
 
 	info->resume_bit = 0;
 

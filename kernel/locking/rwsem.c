@@ -469,11 +469,11 @@ enum writer_wait_state {
 };
 
 /*
- * The typical HZ value is either 250 or 1000. So set the minimum waiting
+ * The typical msecs_to_jiffies(1000) value is either 250 or 1000. So set the minimum waiting
  * time to at least 4ms or 1 jiffy (if it is higher than 4ms) in the wait
  * queue before initiating the handoff protocol.
  */
-#define RWSEM_WAIT_TIMEOUT	DIV_ROUND_UP(HZ, 250)
+#define RWSEM_WAIT_TIMEOUT	DIV_ROUND_UP(1000, 250)
 
 /*
  * Magic number to batch-wakeup waiting readers, even when writers are

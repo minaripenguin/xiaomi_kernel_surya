@@ -334,7 +334,7 @@ static void vmpressure_memcg(gfp_t gfp, struct mem_cgroup *memcg, bool critical,
 			 * asserted for a second in which subsequent
 			 * pressure events can occur.
 			 */
-			memcg->socket_pressure = jiffies + HZ;
+			memcg->socket_pressure = jiffies + msecs_to_jiffies(1000);
 		}
 	}
 }

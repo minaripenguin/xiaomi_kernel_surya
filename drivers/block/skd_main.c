@@ -729,7 +729,7 @@ static void skd_timer_tick(ulong arg)
 	if (skdev->state != SKD_DRVR_STATE_ONLINE)
 		skd_timer_tick_not_online(skdev);
 
-	mod_timer(&skdev->timer, (jiffies + HZ));
+	mod_timer(&skdev->timer, (jiffies + msecs_to_jiffies(1000)));
 
 	spin_unlock_irqrestore(&skdev->lock, reqflags);
 }
@@ -859,7 +859,7 @@ static int skd_start_timer(struct skd_device *skdev)
 
 	setup_timer(&skdev->timer, skd_timer_tick, (ulong)skdev);
 
-	rc = mod_timer(&skdev->timer, (jiffies + HZ));
+	rc = mod_timer(&skdev->timer, (jiffies + msecs_to_jiffies(1000)));
 	if (rc)
 		dev_err(&skdev->pdev->dev, "failed to start timer %d\n", rc);
 	return rc;
@@ -2192,7 +2192,7 @@ static void skd_stop_device(struct skd_device *skdev)
 	spin_unlock_irqrestore(&skdev->lock, flags);
 
 	wait_event_interruptible_timeout(skdev->waitq,
-					 (skdev->sync_done), (10 * HZ));
+					 (skdev->sync_done), (10 * msecs_to_jiffies(1000)));
 
 	spin_lock_irqsave(&skdev->lock, flags);
 
@@ -2859,7 +2859,7 @@ static int skd_cons_disk(struct skd_device *skdev)
 	queue_flag_set_unlocked(QUEUE_FLAG_NONROT, q);
 	queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, q);
 
-	blk_queue_rq_timeout(q, 8 * HZ);
+	blk_queue_rq_timeout(q, 8 * msecs_to_jiffies(1000));
 
 	spin_lock_irqsave(&skdev->lock, flags);
 	dev_dbg(&skdev->pdev->dev, "stopping queue\n");
@@ -3244,7 +3244,7 @@ static int skd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	rc = wait_event_interruptible_timeout(skdev->waitq,
 					      (skdev->gendisk_on),
-					      (SKD_START_WAIT_SECONDS * HZ));
+					      (SKD_START_WAIT_SECONDS * msecs_to_jiffies(1000)));
 	if (skdev->gendisk_on > 0) {
 		/* device came on-line after reset */
 		skd_bdev_attach(&pdev->dev, skdev);

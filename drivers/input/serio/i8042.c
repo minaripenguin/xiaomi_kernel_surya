@@ -550,7 +550,7 @@ static irqreturn_t i8042_interrupt(int irq, void *dev_id)
 
 			switch (data) {
 				default:
-					if (time_before(jiffies, last_transmit + HZ/10)) {
+					if (time_before(jiffies, last_transmit + msecs_to_jiffies(1000)/10)) {
 						str = last_str;
 						break;
 					}

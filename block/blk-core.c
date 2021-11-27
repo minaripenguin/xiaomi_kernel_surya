@@ -1442,7 +1442,7 @@ retry:
 	 * FIXME: this should be io_schedule().  The timeout is there as a
 	 * workaround for some io timeout problems.
 	 */
-	io_schedule_timeout(5*HZ);
+	io_schedule_timeout(5*msecs_to_jiffies(1000));
 
 	/*
 	 * After sleeping, we become a "batching" process and will be able

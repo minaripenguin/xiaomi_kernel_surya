@@ -76,13 +76,13 @@ static void mga_crtc_load_lut(struct drm_crtc *crtc)
 
 static inline void mga_wait_vsync(struct mga_device *mdev)
 {
-	unsigned long timeout = jiffies + HZ/10;
+	unsigned long timeout = jiffies + msecs_to_jiffies(1000)/10;
 	unsigned int status = 0;
 
 	do {
 		status = RREG32(MGAREG_Status);
 	} while ((status & 0x08) && time_before(jiffies, timeout));
-	timeout = jiffies + HZ/10;
+	timeout = jiffies + msecs_to_jiffies(1000)/10;
 	status = 0;
 	do {
 		status = RREG32(MGAREG_Status);
@@ -91,7 +91,7 @@ static inline void mga_wait_vsync(struct mga_device *mdev)
 
 static inline void mga_wait_busy(struct mga_device *mdev)
 {
-	unsigned long timeout = jiffies + HZ;
+	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
 	unsigned int status = 0;
 	do {
 		status = RREG8(MGAREG_Status + 2);
