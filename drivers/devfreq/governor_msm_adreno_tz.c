@@ -353,7 +353,12 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 
 	*freq = stats.current_frequency;
 	priv->bin.total_time += stats.total_time;
-	priv->bin.busy_time += stats.busy_time;
+	// scale busy time up based on hfr ratio (1+ (120/60)), only if FLOOR is exceeded...
+	if ((unsigned int)(priv->bin.busy_time + stats.busy_time) >= FLOOR) {
+		priv->bin.busy_time += stats.busy_time * 3;
+	} else {
+		priv->bin.busy_time += stats.busy_time * 3 / 2;
+	}
 
 	if (stats.private_data)
 		context_count =  *((int *)stats.private_data);
@@ -389,7 +394,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 
 		scm_data[0] = level;
 		scm_data[1] = priv->bin.total_time;
-		scm_data[2] = priv->bin.busy_time * 3 / 2;
+		scm_data[2] = priv->bin.busy_time;
 		scm_data[3] = context_count;
 		__secure_tz_update_entry3(scm_data, sizeof(scm_data),
 					&val, sizeof(val), priv);
