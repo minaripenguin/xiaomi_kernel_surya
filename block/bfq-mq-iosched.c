@@ -117,7 +117,7 @@ static const int bfq_default_max_budget = (16 * 1024);
 static const int bfq_async_charge_factor = 10;
 
 /* Default timeout values, in jiffies, approximating CFQ defaults. */
-static const int bfq_timeout = (HZ / 8);
+static const int bfq_timeout = 125;
 
 /*
  * Time limit for merging (see comments in bfq_setup_cooperator). Set
@@ -131,7 +131,7 @@ static const int bfq_timeout = (HZ / 8);
  * first requests from each cooperator.  After that, there is very
  * little chance to find cooperators.
  */
-static const unsigned long bfq_merge_time_limit = HZ/10;
+static const unsigned long bfq_merge_time_limit = 100;
 
 #define MAX_LENGTH_REASON_NAME 25
 
@@ -3458,7 +3458,7 @@ static unsigned long bfq_bfqq_softrt_next_start(struct bfq_data *bfqd,
 
 	return max3(bfqq->soft_rt_next_start,
 		    bfqq->last_idle_bklogged +
-		    HZ * bfqq->service_from_backlogged /
+		    msecs_to_jiffies(1000) * bfqq->service_from_backlogged /
 		    bfqd->bfq_wr_max_softrt_rate,
 		    jiffies + nsecs_to_jiffies(bfqq->bfqd->bfq_slice_idle) + 4);
 }
