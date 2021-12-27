@@ -353,9 +353,9 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 
 	*freq = stats.current_frequency;
 	priv->bin.total_time += stats.total_time;
-	// scale busy time up based on hfr ratio (1+ (120/60)), only if FLOOR is exceeded...
+	// scale busy time up based on adrenoboost algorithm (hardcoded to 4, whereas 5.5 is the maximum value, adrenoboost applies), only if FLOOR exceeded...
 	if ((unsigned int)(priv->bin.busy_time + stats.busy_time) >= FLOOR) {
-		priv->bin.busy_time += stats.busy_time * 3;
+		priv->bin.busy_time += stats.busy_time * 4;
 	} else {
 		priv->bin.busy_time += stats.busy_time * 3 / 2;
 	}
