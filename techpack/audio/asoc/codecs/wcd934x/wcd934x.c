@@ -1601,7 +1601,7 @@ static int tavil_codec_set_i2s_rx_ch(struct snd_soc_dapm_widget *w,
 		if (dai->bit_width == 16)
 			i2s_bit_mode = 0x01;
 		else
-			i2s_bit_mode = 0x01;
+			i2s_bit_mode = 0x00;
 
 		switch (dai->rate) {
 		case 8000:
@@ -1636,9 +1636,9 @@ static int tavil_codec_set_i2s_rx_ch(struct snd_soc_dapm_widget *w,
 				    0x3c, (rx_fs_rate << 2));
 	} else {
 		snd_soc_update_bits(codec, i2s_reg,
-				     0x40, i2s_bit_mode << 6);
+				    0x40, 0x00);
 		snd_soc_update_bits(codec, i2s_reg,
-				    0x3c, (rx_fs_rate << 2));
+				    0x3c, 0x00);
 	}
 	return 0;
 }
@@ -1657,7 +1657,7 @@ static int tavil_codec_set_i2s_tx_ch(struct snd_soc_dapm_widget *w,
 		if (dai->bit_width == 16)
 			i2s_bit_mode = 0x01;
 		else
-			i2s_bit_mode = 0x01;
+			i2s_bit_mode = 0x00;
 
 		snd_soc_update_bits(codec, i2s_reg, 0x40, i2s_bit_mode << 6);
 
@@ -1712,19 +1712,19 @@ static int tavil_codec_set_i2s_tx_ch(struct snd_soc_dapm_widget *w,
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX0_CFG,
-				    0x03, 0x01);
+				    0x03, 0x00);
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX0_CFG,
-				    0x0C, 0x01);
+				    0x0C, 0x00);
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX1_0_CFG,
-				    0x03, 0x01);
+				    0x03, 0x00);
 
 		snd_soc_update_bits(codec,
 				    WCD934X_DATA_HUB_I2S_TX1_1_CFG,
-				    0x05, 0x05);
+				    0x05, 0x00);
 	}
 	return 0;
 }
@@ -2221,8 +2221,8 @@ static void tavil_ocp_control(struct snd_soc_codec *codec, bool enable)
 		snd_soc_update_bits(codec, WCD934X_HPH_OCP_CTL, 0x10, 0x10);
 		snd_soc_update_bits(codec, WCD934X_RX_OCP_CTL, 0x0F, 0x02);
 	} else {
-		snd_soc_update_bits(codec, WCD934X_RX_OCP_CTL, 0x0F, 0x02);
-		snd_soc_update_bits(codec, WCD934X_HPH_OCP_CTL, 0x10, 0x10);
+		snd_soc_update_bits(codec, WCD934X_RX_OCP_CTL, 0x0F, 0x0F);
+		snd_soc_update_bits(codec, WCD934X_HPH_OCP_CTL, 0x10, 0x00);
 	}
 }
 
@@ -2713,7 +2713,7 @@ static int tavil_codec_ear_dac_event(struct snd_soc_dapm_widget *w,
 		wcd_clsh_fsm(codec, &tavil->clsh_d,
 			     WCD_CLSH_EVENT_PRE_DAC,
 			     WCD_CLSH_STATE_EAR,
-			     CLS_AB);
+			     CLS_H_NORMAL);
 		if (tavil->anc_func)
 			snd_soc_update_bits(codec, WCD934X_CDC_RX0_RX_PATH_CFG0,
 					    0x10, 0x10);
@@ -2722,7 +2722,7 @@ static int tavil_codec_ear_dac_event(struct snd_soc_dapm_widget *w,
 		wcd_clsh_fsm(codec, &tavil->clsh_d,
 			     WCD_CLSH_EVENT_POST_PA,
 			     WCD_CLSH_STATE_EAR,
-			     CLS_AB);
+			     CLS_H_NORMAL);
 		break;
 	default:
 		break;
@@ -2776,7 +2776,7 @@ static int tavil_codec_hphr_dac_event(struct snd_soc_dapm_widget *w,
 					    0xF0, 0x40);
 		if (dsd_conf &&
 		    (snd_soc_read(codec, WCD934X_CDC_DSD1_PATH_CTL) & 0x01))
-			hph_mode = CLS_AB;
+			hph_mode = CLS_H_HIFI;
 
 		wcd_clsh_fsm(codec, &tavil->clsh_d,
 			     WCD_CLSH_EVENT_PRE_DAC,
@@ -2858,7 +2858,7 @@ static int tavil_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 					    0xF0, 0x40);
 		if (dsd_conf &&
 		    (snd_soc_read(codec, WCD934X_CDC_DSD0_PATH_CTL) & 0x01))
-			hph_mode = CLS_AB;
+			hph_mode = CLS_H_HIFI;
 
 		wcd_clsh_fsm(codec, &tavil->clsh_d,
 			     WCD_CLSH_EVENT_PRE_DAC,
@@ -10278,7 +10278,7 @@ static int tavil_soc_codec_probe(struct snd_soc_codec *codec)
 	/* Class-H Init */
 	wcd_clsh_init(&tavil->clsh_d);
 	/* Default HPH Mode to Class-H Low HiFi */
-	tavil->hph_mode = CLS_AB;
+	tavil->hph_mode = CLS_H_LOHIFI;
 
 	tavil->fw_data = devm_kzalloc(codec->dev, sizeof(*(tavil->fw_data)),
 				      GFP_KERNEL);
