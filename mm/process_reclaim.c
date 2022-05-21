@@ -31,7 +31,7 @@ DECLARE_WORK(swap_work, swap_fn);
 
 /* User knob to enable/disable process reclaim feature */
 static int enable_process_reclaim;
-module_param_named(enable_process_reclaim, enable_process_reclaim, int, 0644);
+module_param_named(enable_process_reclaim, enable_process_reclaim, int, 0444);
 
 /* The max number of pages tried to be reclaimed in a single run */
 int per_swap_size = SWAP_CLUSTER_MAX * 32;
