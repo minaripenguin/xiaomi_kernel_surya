@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=Chaeyoung kernel for Poco X3
+kernel.string=mnri kernel for Poco X3
 do.devicecheck=1
 do.modules=0
 do.systemless=1
